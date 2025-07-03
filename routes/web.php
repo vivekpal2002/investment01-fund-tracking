@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 
 Route::get('/', function () {
-    return view('Contents.index');
+    return view('contents/index');
 });
 // -----login------
 Route::get('/login', [AuthController::class, 'login'])->name('login');

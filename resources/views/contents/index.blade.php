@@ -58,13 +58,13 @@
               <span class="hide-menu">Auth</span>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link" href="./authentication-login.html" aria-expanded="false">
+              <a class="sidebar-link" href="/login" aria-expanded="false">
                 <i class="ti ti-login"></i>
                 <span class="hide-menu">Login</span>
               </a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link" href="./authentication-register.html" aria-expanded="false">
+              <a class="sidebar-link" href="/register" aria-expanded="false">
                 <i class="ti ti-user-plus"></i>
                 <span class="hide-menu">Register</span>
               </a>
