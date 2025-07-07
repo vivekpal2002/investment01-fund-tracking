@@ -12,7 +12,7 @@ $(function () {
 
     chart: {
       type: "bar",
-      height: 335,
+      height: 350,
       offsetX: -15,
       toolbar: { show: false },
       foreColor: "#adb0bb",
@@ -113,7 +113,8 @@ $(function () {
     series: [38, 40, 25],
     labels: ["2022", "2021", "2020"],
     chart: {
-      height: 125,
+      height: 300,
+      width:250,
       type: "donut",
       fontFamily: "Plus Jakarta Sans', sans-serif",
       foreColor: "#adb0bb",
@@ -165,10 +166,11 @@ $(function () {
   // Earning
   // =====================================
   var earning = {
+
     chart: {
       id: "sparkline3",
       type: "area",
-      height: 60,
+      height: 0,
       sparkline: {
         enabled: true,
       },
@@ -208,4 +210,256 @@ $(function () {
     },
   };
   new ApexCharts(document.querySelector("#earning"), earning).render();
+
+
+
+
+
+  var bar_column = {
+    chart: {
+        id: "barColumnChart",
+        type: "bar",
+        height: 80,
+        toolbar: {
+            show: false,
+        },
+        sparkline: {
+            enabled: true,
+          },
+        fontFamily: "Plus Jakarta Sans, sans-serif",
+        foreColor: "#adb0bb",
+    },
+    series: [
+        {
+            name: "Earnings",
+            color: "#49BEFF",
+            data: [25, 66, 20, 40, 12, 58, 20],
+        },
+    ],
+    stroke: {
+        curve: "smooth",
+        width: 2,
+    },
+    fill: {
+        colors: ["#f3feff"],
+        type: "solid",
+        opacity: 0.8,
+    },
+    markers: {
+        size: 0,
+    },
+    tooltip: {
+        theme: "dark",
+        fixed: {
+            enabled: true,
+            position: "right",
+        },
+        x: {
+            show: false,
+        },
+    },
+
+};
+
+var chart = new ApexCharts(document.querySelector("#bar_column"), bar_column);
+chart.render();
+
+var bar_column_1 = {
+    chart: {
+        id: "barColumnChart",
+        type: "bar",
+        height: 80,
+        toolbar: {
+            show: false,
+        },
+        sparkline: {
+            enabled: true,
+          },
+        fontFamily: "Plus Jakarta Sans, sans-serif",
+        foreColor: "#adb0bb",
+    },
+    series: [
+        {
+            name: "Earnings",
+            color: "#49BEFF",
+            data: [25, 66, 20, 40, 12, 58, 20],
+        },
+    ],
+    stroke: {
+        curve: "smooth",
+        width: 2,
+    },
+    fill: {
+        colors: ["#f3feff"],
+        type: "solid",
+        opacity: 0.8,
+    },
+    markers: {
+        size: 0,
+    },
+    tooltip: {
+        theme: "dark",
+        fixed: {
+            enabled: true,
+            position: "right",
+        },
+        x: {
+            show: false,
+        },
+    },
+
+};
+
+var chart = new ApexCharts(document.querySelector("#bar_column_1"), bar_column_1);
+chart.render();
+
+var bar_column_2 = {
+    chart: {
+        id: "barColumnChart",
+        type: "bar",
+        height: 80,
+        toolbar: {
+            show: false,
+        },
+        sparkline: {
+            enabled: true,
+          },
+        fontFamily: "Plus Jakarta Sans, sans-serif",
+        foreColor: "#adb0bb",
+    },
+    series: [
+        {
+            name: "Earnings",
+            color: "#49BEFF",
+            data: [25, 66, 20, 40, 12, 58, 20],
+        },
+    ],
+    stroke: {
+        curve: "smooth",
+        width: 2,
+    },
+    fill: {
+        colors: ["#f3feff"],
+        type: "solid",
+        opacity: 0.8,
+    },
+    markers: {
+        size: 0,
+    },
+    tooltip: {
+        theme: "dark",
+        fixed: {
+            enabled: true,
+            position: "right",
+        },
+        x: {
+            show: false,
+        },
+    },
+
+};
+
+var chart = new ApexCharts(document.querySelector("#bar_column_2"), bar_column_2);
+chart.render();
+
+
+var bar_column_3 = {
+    chart: {
+        id: "barColumnChart",
+        type: "bar",
+        height: 80,
+        toolbar: {
+            show: false,
+        },
+        sparkline: {
+            enabled: true,
+          },
+        fontFamily: "Plus Jakarta Sans, sans-serif",
+        foreColor: "#adb0bb",
+    },
+    series: [
+        {
+            name: "Earnings",
+            color: "#49BEFF",
+            data: [25, 66, 20, 40, 12, 58, 20],
+        },
+    ],
+    stroke: {
+        curve: "smooth",
+        width: 2,
+    },
+    fill: {
+        colors: ["#f3feff"],
+        type: "solid",
+        opacity: 0.8,
+    },
+    markers: {
+        size: 0,
+    },
+    tooltip: {
+        theme: "dark",
+        fixed: {
+            enabled: true,
+            position: "right",
+        },
+        x: {
+            show: false,
+        },
+    },
+
+};
+
+var chart = new ApexCharts(document.querySelector("#bar_column_3"), bar_column_3);
+chart.render();
+
+
+var bar_column_4 = {
+    chart: {
+        id: "barColumnChart",
+        type: "bar",
+        height: 80,
+        toolbar: {
+            show: false,
+        },
+        sparkline: {
+            enabled: true,
+          },
+        fontFamily: "Plus Jakarta Sans, sans-serif",
+        foreColor: "#adb0bb",
+    },
+    series: [
+        {
+            name: "Earnings",
+            color: "#49BEFF",
+            data: [25, 66, 20, 40, 12, 58, 20],
+        },
+    ],
+    stroke: {
+        curve: "smooth",
+        width: 2,
+    },
+    fill: {
+        colors: ["#f3feff"],
+        type: "solid",
+        opacity: 0.8,
+    },
+    markers: {
+        size: 0,
+    },
+    tooltip: {
+        theme: "dark",
+        fixed: {
+            enabled: true,
+            position: "right",
+        },
+        x: {
+            show: false,
+        },
+    },
+
+};
+
+var chart = new ApexCharts(document.querySelector("#bar_column_4"), bar_column_4);
+chart.render();
+
 })
