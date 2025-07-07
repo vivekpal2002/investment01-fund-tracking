@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 
 Route::get('/', function () {
-    return view('Contents.index');
+    return view('contents/index');
 });
 // -----login------
 Route::get('/login', [AuthController::class, 'login'])->name('login');
@@ -18,7 +18,7 @@ Route::get('/register',[AuthController::class, 'register'])->name('register');
 Route::post('/get-register', [AuthController::class, 'get_register'])->name('get_register');
 
 // --------log-out------
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // ------- email-verify---------
 Route::get('/email/verify', function () {
