@@ -21,5 +21,9 @@ class OperationController extends Controller
     public function report(){
         return view('contents.reports');
     }
+    public function calender(){
+        return view('contents.calender');
+    }
+
 
 }

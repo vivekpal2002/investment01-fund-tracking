@@ -1,9 +1,11 @@
-@extends('layout.contentslayout')
+@extends('layout.contentslayout') 
+
+@section('title', 'Reports & Analytics')
+
+@section('breadcrumb')
+    <li class="breadcrumb-item active" aria-current="page">Reports & Analytics</li>
+@endsection
+
 @section('maincontents')
-    @include('barmenu.menu')
-    <div class="body-wrapper-inner">
-        <div class="container-fluid">
-            <h1 class="font-weight">Reports & Analytics</h1>
-        </div>
-    </div>
+    <h1 class="font-weight-bold">Reports & Analytics</h1>
 @endsection

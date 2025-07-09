@@ -51,3 +51,7 @@ Route::get('goals',[OperationController::class,'goal'])->name('goals');
 
 // -------------report--------------
 Route::get('report',[OperationController::class,'report'])->name('report');
+
+// ------------------calender------------
+Route::get('calender',[OperationController::class,'calender'])->name('calender');
+

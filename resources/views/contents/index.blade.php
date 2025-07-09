@@ -1,9 +1,6 @@
 @extends('layout.contentslayout')
 @section('maincontents')
-    @include('barmenu.menu')
     <!--  Header End -->
-    <div class="body-wrapper-inner">
-        <div class="container-fluid">
             <div class="dashbord-front-view">
                 <h1 class="font-weight">Dashboard</h1>
 
@@ -192,6 +189,4 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 @endsection

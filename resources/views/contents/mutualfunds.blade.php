@@ -1,9 +1,8 @@
 @extends('layout.contentslayout')
+@section('title', 'Mutual-Funds')
+@section('breadcrumb')
+    <li class="breadcrumb-item active" aria-current="page">Mutual-Funds</li>
+@endsection
 @section('maincontents')
-    @include('barmenu.menu')
-    <div class="body-wrapper-inner">
-        <div class="container-fluid">
-            <h1 class="font-weight">Mutual-Funds</h1>
-        </div>
-    </div>
+    <h1 class="font-weight">Mutual-Funds</h1>
 @endsection

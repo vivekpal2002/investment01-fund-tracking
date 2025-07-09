@@ -72,6 +72,12 @@
                             </a>
                         </li>
                         <li class="sidebar-item">
+                            <a class="sidebar-link" href="/calender" aria-expanded="false">
+                                <i class="ti ti-calendar-event"></i>
+                                <span class="hide-menu">Calender</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
                             <a class="sidebar-link" href="/report" aria-expanded="false">
                                 <i class="ti ti-report-analytics"></i>
                                 <span class="hide-menu">Reports & Analytics</span>
