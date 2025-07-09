@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\OperationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -35,3 +36,18 @@ Route::post('/email/verification-notification', function (Request $request) {
 
     return back()->with('message', 'Verification link sent!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+// ----------wallet---------
+Route::get('wallet',[OperationController::class,'wallet'])->name('wallet');
+
+// -------------expenses--------------
+Route::get('expenses',[OperationController::class,'expenses'])->name('expenses');
+
+// -------------mutualfunds--------------
+Route::get('mutualfunds',[OperationController::class,'mutualfunds'])->name('mutualfunds');
+
+// ------------goals----------
+Route::get('goals',[OperationController::class,'goal'])->name('goals');
+
+// -------------report--------------
+Route::get('report',[OperationController::class,'report'])->name('report');
