@@ -478,8 +478,9 @@ document.addEventListener('DOMContentLoaded', function () {
             initialView: 'dayGridMonth',
             events: '/api/expenses/by-date', // JSON route
             eventClick: function(info) {
-                alert(info); // Or show modal with more info
+                alert('You spent on ' + info.event.startStr + ': ' + info.event.title);
             }
+            
         });
         calendar.render();
     }

@@ -127,7 +127,7 @@
                                             <tr>
                                                 <td class="ps-0">
                                                     <div class="d-flex align-items-center">
-                                                        <img src="../assets/images/profile/user-3.jpg"
+                                                        <img src=""
                                                             class="rounded-circle me-2" width="40" height="40"
                                                             alt="">
                                                         <div>

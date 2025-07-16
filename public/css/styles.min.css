@@ -1745,6 +1745,51 @@ progress {
     flex: 0 0 auto;
     width: 16.66666667%;
   }
+  .budgets-nav {
+    background: #fff;
+    padding: 20px;
+    cursor: pointer;
+    position: relative;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    border-radius: 20px;
+    -webkit-box-shadow: rgba(145, 158, 171, 0.3) 0px 0px 0px 0px, rgba(145, 158, 171, 0.12) 0px 12px 24px -4px;
+    box-shadow: rgba(145, 158, 171, 0.3) 0px 0px 0px 0px, rgba(145, 158, 171, 0.12) 0px 12px 24px -4px;
+    margin: 20px;
+}
+.goals-nav {
+    background: #fff;
+    padding: 20px;
+    cursor: pointer;
+    border-radius: 20px;
+    position: relative;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-shadow: rgba(145, 158, 171, 0.3) 0px 0px 0px 0px, rgba(145, 158, 171, 0.12) 0px 12px 24px -4px;
+    box-shadow: rgba(145, 158, 171, 0.3) 0px 0px 0px 0px, rgba(145, 158, 171, 0.12) 0px 12px 24px -4px;
+    margin: 20px;
+}
+.goals-tab-title {
+    padding: 16px;
+    background: #fff;
+    margin-bottom: 20px;
+    -webkit-box-shadow: rgba(145, 158, 171, 0.3) 0px 0px 0px 0px, rgba(145, 158, 171, 0.12) 0px 12px 24px -4px;
+    box-shadow: rgba(145, 158, 171, 0.3) 0px 0px 0px 0px, rgba(145, 158, 171, 0.12) 0px 12px 24px -4px;
+    border-radius: 20px;
+}
+.settings-menu {
+    margin-bottom: 30px;
+}
+.analytics-widget {
+    background: #fff;
+    box-shadow: 20px;
+    padding:10px;
+    border-radius: 15px;
+    margin-bottom:20px;
+    border: 1px solid rgba(22, 162, 73, 0.15);
+  }
   .col-xl-auto {
     flex: 0 0 auto;
     width: auto;
