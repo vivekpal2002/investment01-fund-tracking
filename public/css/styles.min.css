@@ -1746,17 +1746,14 @@ progress {
     width: 16.66666667%;
   }
   .budgets-nav {
-    background: #fff;
-    padding: 20px;
+    background-color: transparent; /* use .card for background */
+    border-radius: 20px; /* already handled by .card */
     cursor: pointer;
     position: relative;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    border-radius: 20px;
-    -webkit-box-shadow: rgba(145, 158, 171, 0.3) 0px 0px 0px 0px, rgba(145, 158, 171, 0.12) 0px 12px 24px -4px;
+
+    display: flex;
+    flex-direction: column;
     box-shadow: rgba(145, 158, 171, 0.3) 0px 0px 0px 0px, rgba(145, 158, 171, 0.12) 0px 12px 24px -4px;
-    margin: 20px;
 }
 .goals-nav {
     background: #fff;

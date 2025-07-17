@@ -21,7 +21,7 @@
                                 </svg>
                                 <span class="small fw-medium">↑ +12.5%</span>
                             </div>
-                            <h3 class="mt-2 fs-4 fw-bold text-white mb-0">$6,840.50</h3>
+                            <h3 class="mt-2 fs-4 fw-bold text-white mb-0">₹6,840.50</h3>
                         </div>
                         <div class="card-body" >
                             <p class="small text-muted fw-medium mb-0">Monthly Income</p>
@@ -41,7 +41,7 @@
                                 </svg>
                                 <span class="small fw-medium">↑ +5.2%</span>
                             </div>
-                            <h3 class="mt-2 fs-4 fw-bold text-white mb-0">$4,385.75</h3>
+                            <h3 class="mt-2 fs-4 fw-bold text-white mb-0">₹4,385.75</h3>
                         </div>
                         <div class="card-body" >
                             <p class="small text-muted fw-medium mb-0">Monthly Expenses</p>
@@ -61,7 +61,7 @@
                                 </svg>
                                 <span class="small fw-medium">↑ +18.3%</span>
                             </div>
-                            <h3 class="mt-2 fs-4 fw-bold text-white mb-0">$2,454.75</h3>
+                            <h3 class="mt-2 fs-4 fw-bold text-white mb-0">₹2,454.75</h3>
                         </div>
                         <div class="card-body" >
                             <p class="small text-muted fw-medium mb-0">Total Savings</p>
@@ -94,7 +94,7 @@
                     </div>
                     <div class="widget-content">
                         <p>Daily Average</p>
-                        <h3>$5470.36</h3>
+                        <h3>₹5470.36</h3>
                     </div>
                 </div>
             </div>

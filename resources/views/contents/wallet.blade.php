@@ -6,21 +6,18 @@
 @section('maincontents')
     <h1 class="font-weight">Wallet & Transactions</h1>
     <div class="row mt-7 justify-content-sm-between">
-        <div class="col-8 col-md-3 mx-2">
-            <div class="d-flex flex-column gap-4">
-                <button type="button"
-                    class="btn rounded-pill wave-effect wave-light btn-primary-subtle  btn-outline-primary fs-4 "
-                    data-bs-toggle="modal" data-bs-target="#addaccount">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+            <div class="d-flex flex-column gap-3">
+                <button type="button" class="btn rounded-pill btn-outline-primary fs-5" data-bs-toggle="modal"
+                    data-bs-target="#addaccount">
                     <i class="ti ti-circle-plus me-2"></i> Add New Account
                 </button>
-                <button type="button"
-                    class="btn rounded-pill wave-effect wave-light btn-primary-subtle  btn-outline-primary fs-4 "
-                    data-bs-toggle="modal" data-bs-target="#addtransaction">
+                <button type="button" class="btn rounded-pill btn-outline-primary fs-5" data-bs-toggle="modal"
+                    data-bs-target="#addtransaction">
                     <i class="ti ti-circle-plus me-2"></i> Add Transaction
                 </button>
             </div>
         </div>
-
         <!--Add account Modal -->
         <div class="modal fade" id="addaccount" tabindex="-1" aria-labelledby="addaccount" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
@@ -171,8 +168,8 @@
                 </div>
             </div>
         </div>
-
-        <div class="col-12 col-md-4 mx-3 h-100 rounded-3">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-4 mb-3">
+        {{-- <div class="col-12 col-md-4 mx-3 h-100 rounded-3"> --}}
             <div class="card  bg-primary-subtle">
                 <div class="card-body">
                     <p class="mb-1 fs-3">Total Balance</p>
@@ -195,7 +192,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 col-md-4 mx-3 rounded-3">
+        {{-- <div class="col-12 col-md-4 mx-3 rounded-3"> --}}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-4 mb-3">
             <div id="cardCarousel" class="carousel slide carousel-dark" data-bs-ride="carousel">
                 <div class="carousel-inner" id="cardCarouselInner">
                     <!-- Cards will be injected here via JS -->

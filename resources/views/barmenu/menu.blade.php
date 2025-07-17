@@ -91,6 +91,7 @@
                         <li>
                             <span class="sidebar-divider lg"></span>
                         </li>
+                        @if(!Auth::user())
                         <li class="nav-small-cap">
                             <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
                             <span class="hide-menu">Auth</span>
@@ -107,6 +108,7 @@
                                 <span class="hide-menu">Register</span>
                             </a>
                         </li>
+                        @endif
                     </ul>
                 </nav>
                 <!-- End Sidebar navigation -->
@@ -143,13 +145,7 @@
                             </div>
                         </li>
                     </ul>
-                    <div class="search ">
-                        <form action="#">
-                            <div class="input-icon">
-                                <input type="text" class="form-control" placeholder="Search Here">
-                            </div>
-                        </form>
-                    </div>
+                
                     <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
                         <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
                             <h4 class="btn btn-primary">Hi  {{ Auth::user()->name ?? 'User' }}! </h4>

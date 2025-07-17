@@ -10,17 +10,44 @@
             <div class="col-xl-3">
                 <div class="nav d-block" role="tablist">
                     <div class="row">
-                        @foreach($goals as $index => $goal)
-                            <div class="col-xl-12 col-md-6">
-                                <div class="goals-nav {{ $index == 0 ? 'active' : '' }}"
-                                     data-bs-toggle="pill"
-                                     data-bs-target="#{{ $goal['id'] }}"
-                                     aria-selected="{{ $index == 0 ? 'true' : 'false' }}"
-                                     role="tab"
-                                     tabindex="{{ $index == 0 ? '0' : '-1' }}">
-                                    <div class="goals-nav-text">
-                                        <h3>{{ $goal['title'] }}</h3>
-                                        <p><strong>${{ number_format($goal['current'], 2) }}</strong> / ${{ number_format($goal['target'], 2) }}</p>
+                        @foreach ($goals as $index => $goal)
+                            <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-10 mb-4">
+                                <div class="card shadow-sm h-100 {{ $index == 0 ? 'border-primary' : '' }}"
+                                    data-bs-toggle="pill" data-bs-target="#{{ $goal['id'] }}"
+                                    aria-selected="{{ $index == 0 ? 'true' : 'false' }}" role="tab"
+                                    tabindex="{{ $index == 0 ? '0' : '-1' }}">
+
+                                    <div class="card-body">
+                                        <div class="d-flex flex-column justify-content-between h-100">
+                                            <!-- Title -->
+                                            <h5 class="card-title mb-2">{{ $goal['title'] }}</h5>
+
+                                            <!-- Progress Text -->
+                                            <p class="card-text text-muted mb-2">
+                                                <strong>₹{{ number_format($goal['current'], 2) }}</strong>
+                                                &nbsp;/ ₹{{ number_format($goal['target'], 2) }}
+                                            </p>
+
+                                            <!-- Progress Bar -->
+                                            @php
+                                                $percent =
+                                                    $goal['target'] > 0
+                                                        ? round(($goal['current'] / $goal['target']) * 100, 2)
+                                                        : 0;
+                                            @endphp
+
+                                            <div class="progress rounded-pill" style="height: 6px;">
+                                                <div class="progress-bar bg-success"
+                                                    style="width: {{ min($percent, 100) }}%;">
+                                                </div>
+                                            </div>
+
+                                            <!-- Bottom text -->
+                                            <div class="d-flex justify-content-between mt-2 small text-muted">
+                                                <span>{{ $percent }}%</span>
+                                                <span>{{ $percent >= 100 ? 'Goal Achieved' : 'In Progress' }}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -54,11 +81,11 @@
                                             <div class="d-flex justify-content-between">
                                                 <div>
                                                     <span>Saved</span>
-                                                    <h3>${{ number_format($goal['current'], 2) }}</h3>
+                                                    <h3>₹{{ number_format($goal['current'], 2) }}</h3>
                                                 </div>
                                                 <div class="text-end">
                                                     <span>Goals</span>
-                                                    <h3>${{ number_format($goal['target'], 2) }}</h3>
+                                                    <h3>₹{{ number_format($goal['target'], 2) }}</h3>
                                                 </div>
                                             </div>
                                             @php
@@ -85,25 +112,25 @@
                                                 <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
                                                     <div class="goals-widget">
                                                         <p>Last Month</p>
-                                                        <h3>$42,678</h3>
+                                                        <h3>₹42,678</h3>
                                                     </div>
                                                 </div>
                                                 <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
                                                     <div class="goals-widget">
                                                         <p>Expenses</p>
-                                                        <h3>$1,798</h3>
+                                                        <h3>₹1,798</h3>
                                                     </div>
                                                 </div>
                                                 <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
                                                     <div class="goals-widget">
                                                         <p>Taxes</p>
-                                                        <h3>$255.25</h3>
+                                                        <h3>₹255.25</h3>
                                                     </div>
                                                 </div>
                                                 <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
                                                     <div class="goals-widget">
                                                         <p>Debt</p>
-                                                        <h3>$365,478</h3>
+                                                        <h3>₹365,478</h3>
                                                     </div>
                                                 </div>
                                             </div>
@@ -128,7 +155,7 @@
                                                         <div class="goals-info flex-grow-2 me-3">
                                                             <div class="d-flex justify-content-between mb-1">
                                                                 <h5 class="mb-1">{{ $wallet['name'] }}</h5>
-                                                                <p class="mb-0">${{ $wallet['amount'] }}</p>
+                                                                <p class="mb-0">₹{{ $wallet['amount'] }}</p>
                                                             </div>
                                                             <div class="progress">
                                                                 <div class="progress-bar" role="progressbar"

@@ -28,8 +28,8 @@ class ExpenseController extends Controller
     $end = $request->query('end');
 
     $events = [
-        ['title' => '$250 spent', 'start' => '2025-07-16'],
-        ['title' => '$100 spent', 'start' => '2025-07-15'],
+        ['title' => '₹250 spent', 'start' => '2025-07-16'],
+        ['title' => '₹100 spent', 'start' => '2025-07-15'],
         // ...
     ];
 
