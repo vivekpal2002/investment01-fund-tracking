@@ -463,3 +463,26 @@ var chart = new ApexCharts(document.querySelector("#bar_column_4"), bar_column_4
 chart.render();
 
 })
+document.addEventListener('DOMContentLoaded', function () {
+    var calendarEl = document.getElementById('calendar');
+
+    if (!isAuthenticated) {
+        // User is not authenticated
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth'
+        });
+        calendar.render();
+    } else {
+        // User is authenticated
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events: '/api/expenses/by-date', // JSON route
+            eventClick: function(info) {
+                alert('You spent on ' + info.event.startStr + ': ' + info.event.title);
+            }
+            
+        });
+        calendar.render();
+    }
+  });
+
