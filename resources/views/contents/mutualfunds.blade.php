@@ -4,6 +4,36 @@
     <li class="breadcrumb-item active" aria-current="page">Mutual-Funds</li>
 @endsection
 @section('maincontents')
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Fetch from Alpha Vantage API
+$json = file_get_contents('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&apikey=demo');
+$data = json_decode($json, true);
+
+$stockname=($data['Meta Data']['2. Symbol']);
+// Extract time series data
+$timeSeries = $data['Time Series (Daily)'] ?? [];
+
+// Prepare arrays
+$dates = [];
+$navs = [];
+
+// Loop through only the last 10 entries
+foreach (array_slice($timeSeries, 0, 10) as $date => $info) {
+    $formattedDate = date('M d', strtotime($date)); // Format as "Jul 17"
+    $dates[] = $formattedDate;
+    $navs[] = (float)$info['4. close'];
+}
+
+// Reverse for chronological order
+$dates = array_reverse($dates);
+$navs = array_reverse($navs);
+?>
+
+
+
     <h1 class="font-weight">Mutual-Funds</h1>
     <div class="row">
 
@@ -52,7 +82,7 @@
 
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h5 class="fw-semibold mb-3">Stock Watchlists</h5>
+                    <h5 class="fw-semibold mb-3"> {{$stockname}}</h5>
 
                     <!-- Chart Container -->
                     <div id="main-performance-graph" style="height: 350x;"></div>
@@ -134,7 +164,35 @@
         </div>
     </div>
 
-
-
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <script>
+        let categories = <?php echo json_encode($dates); ?>;
+        let dataPoints = <?php echo json_encode($navs); ?>;
+
+        let largeChartOptions = {
+            chart: {
+                type: 'line',
+                zoom: {
+            enabled: false
+          },
+                height: 335,
+                toolbar: { show: false }
+            },
+            series: [{
+                name: 'NAV',
+                data: dataPoints
+            }],
+            xaxis: {
+                categories: categories
+            },
+            stroke: { curve: 'smooth', width: 3 },
+            colors: ['#007bff'],
+            markers: { size: 4 }
+        };
+
+        new ApexCharts(document.querySelector("#main-performance-graph"), largeChartOptions).render();
+    </script>
+
 @endsection
