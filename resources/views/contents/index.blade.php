@@ -9,13 +9,13 @@
                     <div class="widget card" style="min-height: 150px;">
                         <div class="card-body">
                             <h4 class="card-title fw-semibold">Total Balance</h4>
-                            <h4 class="fw-semibold mb-3">₹6,820</h4>
+                            <h4 class="fw-semibold mb-3">₹{{$balanace ?? 0.00}}</h4>
                             <div class="d-flex align-items-center">
                                 <span
                                     class="me-2 rounded-circle bg-danger-subtle round-20 d-flex align-items-center justify-content-center">
                                     <i class="ti ti-arrow-down-right text-danger"></i>
                                 </span>
-                                <p class="text-dark me-1 fs-6 mb-0">+9%</p>
+                                <p class="text-dark me-1 fs-6 mb-0">{{$balanace_perecent ?? 0}}%</p>
                                 <p class="fs-6 mb-0">last month</p>
                             </div>
                         </div>
@@ -25,14 +25,14 @@
                     <!-- W2 -->
                     <div class="widget card" style="min-height: 150px;">
                         <div class="card-body">
-                            <h4 class="card-title fw-semibold">Total Period Balance</h4>
-                            <h4 class="fw-semibold mb-3">₹6,820</h4>
+                            <h4 class="card-title fw-semibold">Monthly Expense</h4>
+                            <h4 class="fw-semibold mb-3">₹{{$Monthly ?? 0.00}}</h4>
                             <div class="d-flex align-items-center">
                                 <span
                                     class="me-2 rounded-circle bg-danger-subtle round-20 d-flex align-items-center justify-content-center">
                                     <i class="ti ti-arrow-down-right text-danger"></i>
                                 </span>
-                                <p class="text-dark me-1 fs-6 mb-0">+9%</p>
+                                <p class="text-dark me-1 fs-6 mb-0">+{{$Monthly_percent ?? 0.00}}%</p>
                                 <p class="fs-6 mb-0">last month</p>
                             </div>
                         </div>
@@ -43,13 +43,14 @@
                     <div class="chart card">
                         <div class="card-body">
                             <div class="d-sm-flex d-block align-items-center justify-content-between mb-3">
-                                <h5 class="card-title fw-semibold">Sales Overview</h5>
-                                <select class="form-select w-auto">
-                                    <option>March 2025</option>
-                                    <option>April 2025</option>
-                                    <option>May 2025</option>
-                                    <option>June 2025</option>
-                                </select>
+                                <h5 class="card-title fw-semibold">Spend Chart</h5>
+                                <small class="trend-stats">
+                                    <span class="mb-2">Last Month:</span>
+                                    <span class="text-success">
+                                        <i class="fi fi-rr-arrow-up"></i>
+                                       {{$Chart_growth ?? 0}}%
+                                    </span>
+                                </small>
                             </div>
                             <div id="earning" style="min-height: 250px;"></div>
                         </div>
@@ -58,14 +59,14 @@
                     <!-- W4 -->
                     <div class="widget card" style="min-height: 150px;">
                         <div class="card-body">
-                            <h4 class="card-title fw-semibold">Total Period Expense</h4>
-                            <h4 class="fw-semibold mb-3">₹6,820</h4>
+                            <h4 class="card-title fw-semibold">Saving Goals</h4>
+                            <h4 class="fw-semibold mb-3">₹{{$Saving ?? 0.00}}</h4>
                             <div class="d-flex align-items-center">
                                 <span
                                     class="me-2 rounded-circle bg-danger-subtle round-20 d-flex align-items-center justify-content-center">
                                     <i class="ti ti-arrow-down-right text-danger"></i>
                                 </span>
-                                <p class="text-dark me-1 fs-6 mb-0">+9%</p>
+                                <p class="text-dark me-1 fs-6 mb-0">+{{$Saving_perecent ?? 0}}%</p>
                                 <p class="fs-6 mb-0">last month</p>
                             </div>
                         </div>
@@ -76,13 +77,13 @@
                     <div class="widget card" style="min-height: 150px;">
                         <div class="card-body">
                             <h4 class="card-title fw-semibold">Total Period Income</h4>
-                            <h4 class="fw-semibold mb-3">₹6,820</h4>
+                            <h4 class="fw-semibold mb-3">₹{{$Period_Income ?? 0.00}}</h4>
                             <div class="d-flex align-items-center">
                                 <span
                                     class="me-2 rounded-circle bg-danger-subtle round-20 d-flex align-items-center justify-content-center">
                                     <i class="ti ti-arrow-down-right text-danger"></i>
                                 </span>
-                                <p class="text-dark me-1 fs-6 mb-0">+9%</p>
+                                <p class="text-dark me-1 fs-6 mb-0">+{{$Period_Income_percent ?? 0}}%</p>
                                 <p class="fs-6 mb-0">last month</p>
                             </div>
                         </div>
@@ -97,16 +98,16 @@
                             <div class="card-body">
                                 <div class="d-sm-flex d-block align-items-center justify-content-between mb-4">
                                     <div>
-                                        <h4 class="card-title fw-semibold">Top Performers</h4>
-                                        <p class="card-subtitle">Best Employees</p>
+                                        <h4 class="card-title fw-semibold">Recent Transaction</h4>
+                                        <p class="card-subtitle">Bills Details:</p>
                                     </div>
                                     <div>
-                                        <select class="form-select">
+                                        {{-- <select class="form-select">
                                             <option>March 2024</option>
                                             <option>April 2024</option>
                                             <option>May 2024</option>
                                             <option>June 2024</option>
-                                        </select>
+                                        </select> --}}
                                     </div>
                                 </div>
 
@@ -189,4 +190,17 @@
                     </div>
                 </div>
             </div>
+           
+{{-- <script>
+    // let balanceData   = @json($balanceChart);
+    // let monthlyData   = @json($monthlyChart);
+    // let savingData    = @json($savingChart);
+    // let incomeData    = @json($incomeChart);
+
+    // renderMiniBarChart("#bar_column", balanceData, "#49BEFF");
+    // renderMiniBarChart("#bar_column_1", monthlyData, "#FF6B6B");
+    // renderMiniBarChart("#bar_column_2", savingData, "#4CAF50");
+    // renderMiniBarChart("#bar_column_3", incomeData, "#FF9800");
+</script> --}}
+            
 @endsection

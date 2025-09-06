@@ -210,261 +210,53 @@ $(function () {
     },
   };
   new ApexCharts(document.querySelector("#earning"), earning).render();
-
-
-
-
-
-  var bar_column = {
-    chart: {
-        id: "barColumnChart",
-        type: "bar",
-        height: 80,
-        toolbar: {
-            show: false,
+  function renderMiniBarChart(selector, data, color = "#49BEFF") {
+    let options = {
+        chart: {
+            type: "bar",
+            height: 80,
+            toolbar: { show: false },
+            sparkline: { enabled: true },
+            fontFamily: "Plus Jakarta Sans, sans-serif",
+            foreColor: "#adb0bb",
         },
-        sparkline: {
-            enabled: true,
-          },
-        fontFamily: "Plus Jakarta Sans, sans-serif",
-        foreColor: "#adb0bb",
-    },
-    series: [
-        {
+        series: [{
             name: "Earnings",
-            color: "#49BEFF",
-            data: [25, 66, 20, 40, 12, 58, 20],
+            color: color,
+            data: data
+        }],
+        stroke: { curve: "smooth", width: 2 },
+        fill: {
+            colors: ["#f3feff"],
+            type: "solid",
+            opacity: 0.8,
         },
-    ],
-    stroke: {
-        curve: "smooth",
-        width: 2,
-    },
-    fill: {
-        colors: ["#f3feff"],
-        type: "solid",
-        opacity: 0.8,
-    },
-    markers: {
-        size: 0,
-    },
-    tooltip: {
-        theme: "dark",
-        fixed: {
-            enabled: true,
-            position: "right",
+        markers: { size: 0 },
+        tooltip: {
+            theme: "dark",
+            fixed: { enabled: true, position: "right" },
+            x: { show: false }
         },
-        x: {
-            show: false,
-        },
-    },
+    };
 
-};
+    let chart = new ApexCharts(document.querySelector(selector), options);
+    chart.render();
+}
+let balanceData   = [25, 66, 20, 40, 12, 58, 20];
+let monthlyData   = [15, 45, 35, 50, 22, 38, 60];
+let savingData    = [10, 20, 30, 25, 35, 40, 45];
+let incomeData    = [40, 55, 65, 70, 50, 80, 90];
 
-var chart = new ApexCharts(document.querySelector("#bar_column"), bar_column);
-chart.render();
-
-var bar_column_1 = {
-    chart: {
-        id: "barColumnChart",
-        type: "bar",
-        height: 80,
-        toolbar: {
-            show: false,
-        },
-        sparkline: {
-            enabled: true,
-          },
-        fontFamily: "Plus Jakarta Sans, sans-serif",
-        foreColor: "#adb0bb",
-    },
-    series: [
-        {
-            name: "Earnings",
-            color: "#49BEFF",
-            data: [25, 66, 20, 40, 12, 58, 20],
-        },
-    ],
-    stroke: {
-        curve: "smooth",
-        width: 2,
-    },
-    fill: {
-        colors: ["#f3feff"],
-        type: "solid",
-        opacity: 0.8,
-    },
-    markers: {
-        size: 0,
-    },
-    tooltip: {
-        theme: "dark",
-        fixed: {
-            enabled: true,
-            position: "right",
-        },
-        x: {
-            show: false,
-        },
-    },
-
-};
-
-var chart = new ApexCharts(document.querySelector("#bar_column_1"), bar_column_1);
-chart.render();
-
-var bar_column_2 = {
-    chart: {
-        id: "barColumnChart",
-        type: "bar",
-        height: 80,
-        toolbar: {
-            show: false,
-        },
-        sparkline: {
-            enabled: true,
-          },
-        fontFamily: "Plus Jakarta Sans, sans-serif",
-        foreColor: "#adb0bb",
-    },
-    series: [
-        {
-            name: "Earnings",
-            color: "#49BEFF",
-            data: [25, 66, 20, 40, 12, 58, 20],
-        },
-    ],
-    stroke: {
-        curve: "smooth",
-        width: 2,
-    },
-    fill: {
-        colors: ["#f3feff"],
-        type: "solid",
-        opacity: 0.8,
-    },
-    markers: {
-        size: 0,
-    },
-    tooltip: {
-        theme: "dark",
-        fixed: {
-            enabled: true,
-            position: "right",
-        },
-        x: {
-            show: false,
-        },
-    },
-
-};
-
-var chart = new ApexCharts(document.querySelector("#bar_column_2"), bar_column_2);
-chart.render();
-
-
-var bar_column_3 = {
-    chart: {
-        id: "barColumnChart",
-        type: "bar",
-        height: 80,
-        toolbar: {
-            show: false,
-        },
-        sparkline: {
-            enabled: true,
-          },
-        fontFamily: "Plus Jakarta Sans, sans-serif",
-        foreColor: "#adb0bb",
-    },
-    series: [
-        {
-            name: "Earnings",
-            color: "#49BEFF",
-            data: [25, 66, 20, 40, 12, 58, 20],
-        },
-    ],
-    stroke: {
-        curve: "smooth",
-        width: 2,
-    },
-    fill: {
-        colors: ["#f3feff"],
-        type: "solid",
-        opacity: 0.8,
-    },
-    markers: {
-        size: 0,
-    },
-    tooltip: {
-        theme: "dark",
-        fixed: {
-            enabled: true,
-            position: "right",
-        },
-        x: {
-            show: false,
-        },
-    },
-
-};
-
-var chart = new ApexCharts(document.querySelector("#bar_column_3"), bar_column_3);
-chart.render();
-
-
-var bar_column_4 = {
-    chart: {
-        id: "barColumnChart",
-        type: "bar",
-        height: 80,
-        toolbar: {
-            show: false,
-        },
-        sparkline: {
-            enabled: true,
-          },
-        fontFamily: "Plus Jakarta Sans, sans-serif",
-        foreColor: "#adb0bb",
-    },
-    series: [
-        {
-            name: "Earnings",
-            color: "#49BEFF",
-            data: [25, 66, 20, 40, 12, 58, 20],
-        },
-    ],
-    stroke: {
-        curve: "smooth",
-        width: 2,
-    },
-    fill: {
-        colors: ["#f3feff"],
-        type: "solid",
-        opacity: 0.8,
-    },
-    markers: {
-        size: 0,
-    },
-    tooltip: {
-        theme: "dark",
-        fixed: {
-            enabled: true,
-            position: "right",
-        },
-        x: {
-            show: false,
-        },
-    },
-
-};
-
-var chart = new ApexCharts(document.querySelector("#bar_column_4"), bar_column_4);
-chart.render();
+// ✅ Render charts into widgets
+renderMiniBarChart("#bar_column", balanceData, "#49BEFF");
+renderMiniBarChart("#bar_column_1", monthlyData, "#FF6B6B");
+renderMiniBarChart("#bar_column_2", savingData, "#4CAF50");
+renderMiniBarChart("#bar_column_3", incomeData, "#FF9800");
 
 })
 document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar');
+    
 
     if (!isAuthenticated) {
         // User is not authenticated
