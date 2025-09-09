@@ -3,6 +3,7 @@
 use App\Http\Controllers\OperationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\WalletController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
@@ -39,6 +40,12 @@ Route::post('/email/verification-notification', function (Request $request) {
 
 // ----------wallet---------
 Route::get('wallet',[OperationController::class,'wallet'])->name('wallet');
+
+//-------add-account wallet--------
+Route::post('add-account',[WalletController::class,'add_wallet'])->name('wallet.add_wallet');
+
+//-------add-transaction wallet--------
+Route::post('add-transaction',[WalletController::class,'add_transaction'])->name('wallet.transaction');
 
 // -------------expenses--------------
 Route::get('expenses',[OperationController::class,'expenses'])->name('expenses');

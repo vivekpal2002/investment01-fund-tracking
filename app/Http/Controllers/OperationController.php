@@ -2,12 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\category;
+use App\Models\transaction;
+use App\Models\wallet;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class OperationController extends Controller
 {
     public function wallet(){
-        return view('contents.wallet');
+        $categories = category::where('type',1)->get();
+        $Trans_categories =  category::where('type',2)->get();
+       $wallets = Wallet::with('category')->where('user_id', Auth::id())->get();
+       $transactions =transaction::with('category','wallet')->whereHas('wallet', function($query) {
+        $query->where('user_id', Auth::id());
+         })->orderBy('date', 'desc')->get();
+
+       $total_balance = $wallets->sum('balance');
+       $personal_funds = $wallets->where('type',1)->sum('balance');
+       $credit_cards = $wallets->where('type',2)->sum('balance');
+       $investments = $wallets->where('type',11)->sum('balance');
+        return view('contents.wallet',compact('categories','wallets','Trans_categories','total_balance','personal_funds','credit_cards','investments','transactions'));
     }
     public function expenses(){
         $budgets = [

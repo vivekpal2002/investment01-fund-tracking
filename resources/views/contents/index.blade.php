@@ -123,14 +123,10 @@
                                             </tr>
                                         </thead>
                                         <tbody class="border-top">
-                                            <!-- Loop your performer rows here -->
-                                            <!-- Example row -->
+
                                             <tr>
                                                 <td class="ps-0">
                                                     <div class="d-flex align-items-center">
-                                                        <img src=""
-                                                            class="rounded-circle me-2" width="40" height="40"
-                                                            alt="">
                                                         <div>
                                                             <h6 class="fw-semibold mb-1">Sunil Joshi</h6>
                                                         </div>
@@ -190,7 +186,7 @@
                     </div>
                 </div>
             </div>
-           
+
 {{-- <script>
     // let balanceData   = @json($balanceChart);
     // let monthlyData   = @json($monthlyChart);
@@ -202,5 +198,5 @@
     // renderMiniBarChart("#bar_column_2", savingData, "#4CAF50");
     // renderMiniBarChart("#bar_column_3", incomeData, "#FF9800");
 </script> --}}
-            
+
 @endsection
