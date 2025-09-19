@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\category;
 use App\Models\transaction;
 use App\Models\wallet;
+use Illuminate\Foundation\Providers\FoundationServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -15,9 +16,10 @@ class OperationController extends Controller
         $categories = category::where('type',1)->get();
         $Trans_categories =  category::where('type',2)->get();
        $wallets = Wallet::with('category')->where('user_id', Auth::id())->get();
-       $transactions =transaction::with('category','wallet')->whereHas('wallet', function($query) {
+
+        $transactions =transaction::with('category','wallet')->whereHas('wallet', function($query) {
         $query->where('user_id', Auth::id());
-         })->orderBy('date', 'desc')->get();
+        })->orderBy('date', 'desc')->paginate(5);
 
        $total_balance = $wallets->sum('balance');
        $personal_funds = $wallets->where('type',1)->sum('balance');
@@ -26,40 +28,65 @@ class OperationController extends Controller
         return view('contents.wallet',compact('categories','wallets','Trans_categories','total_balance','personal_funds','credit_cards','investments','transactions'));
     }
     public function expenses(){
-        $budgets = [
-            [
-                'id' => 'a1',
-                'name' => 'Grocery',
-                'icon' => 'fi fi-rr-carrot',
-                'amount' => 1458.30,
-                'spent' => 650.75,
-                'budget' => 850,
-                'period' => 'Overtime',
-                'chartId' => 'chartjsBudgetPeriod1',
-                'last_month' => 42678,
-                'expenses' => 1798,
-                'taxes' => 255.25,
-                'debt' => 365478,
-            ],
-            [
-                'id' => 'a2',
-                'name' => 'Clothes',
-                'icon' => 'fi fi-rr-shirt-long-sleeve',
-                'amount' => 158.30,
-                'spent' => 50.75,
-                'budget' => 850,
-                'period' => 'Week',
-                'chartId' => 'chartjsBudgetPeriod2',
-                'last_month' => 678,
-                'expenses' => 198,
-                'taxes' => 25.25,
-                'debt' => 3478,
-            ],
-            // Add more as needed
-        ];
+        $transactions = transaction::where('user_id', Auth::id())
+        ->get();
 
+    $grouped = $transactions->groupBy('category_id');
+
+        $budgets = $grouped->map(function ($items, $categoryId) {
+            $categoryName = $items->first()->category->name ?? 'Unknown';
+            $categoryIcon = $items->first()->category->icon ?? 'fi fi-rr-folder';
+           
+        
+            // Calculate Income & Expense
+            $spent = $items->where('payment_type', 5)->sum('amount');   // Expense
+            $income = $items->where('payment_type', 1)->sum('amount');  // Income
+        
+            // Last Month Data
+            $lastMonthSpent = $items->where('payment_type', 1)
+                ->whereBetween('created_at', [
+                    now()->subMonth()->startOfMonth(),
+                    now()->subMonth()->endOfMonth(),
+                ])->sum('amount');
+        
+            $lastMonthIncome = $items->where('payment_type', 0)
+                ->whereBetween('created_at', [
+                    now()->subMonth()->startOfMonth(),
+                    now()->subMonth()->endOfMonth(),
+                ])->sum('amount');
+        
+            // Taxes Example (2% of expense, make your own logic)
+            $taxes = $spent * 0.02;
+        
+            // Debt Example (sum of transactions marked as "debt")
+            $debt = $items->where('type', 'debt')->sum('amount');  // assuming you have type column
+            
+            return [
+                'id'          => $categoryId,
+                'name'        => $categoryName,
+                'icon'        => $categoryIcon,
+                'amount'      => $income,
+                'spent'       => $spent,
+                'budget'      => $income - $spent,
+                'last_month'  => [
+                    'income'  => $lastMonthIncome,
+                    'expense' => $lastMonthSpent,
+                ],
+                'expenses'    => $spent,
+                'taxes'       => $taxes,
+                'debt'        => $debt,
+            ];
+        })->values();
+        
         return view('contents.expenses',compact('budgets'));
     }
+     
+    public function expenseCreate(Request $request){
+dd($request->all());
+    }
+
+
+
     public function mutualfunds(){
         $investments = collect([
             (object)[

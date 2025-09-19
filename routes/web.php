@@ -50,6 +50,10 @@ Route::post('add-transaction',[WalletController::class,'add_transaction'])->name
 // -------------expenses--------------
 Route::get('expenses',[OperationController::class,'expenses'])->name('expenses');
 
+//------------create-expense budget.create
+Route::get('/create-expenses',[OperationController::class,'expenseCreate'])->name('budget.create');
+
+
 // -------------mutualfunds--------------
 Route::get('mutualfunds',[OperationController::class,'mutualfunds'])->name('mutualfunds');
 

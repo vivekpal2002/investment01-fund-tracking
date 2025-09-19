@@ -123,14 +123,14 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
     'transaction_statuses' => [
-   0=> 'Completed',
-    1=>'Pending',
-    2=>'Failed',
-],
-'payment_type'=>[
-    0=>'Money sent',
-    1=>'Money received',
-    2=>'Money request',
-],
+        0=> 'Completed',
+        1=>'Pending',
+        2=>'Failed',
+    ],
+    'payment_type'=>[
+        0=>'Money sent',
+        1=>'Money received',
+        2=>'Money request',
+    ],
 
 ];

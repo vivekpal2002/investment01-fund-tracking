@@ -262,44 +262,29 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                   @foreach ($transactions as $transaction)
-                                   <td>{{$transaction->title}}</td>
-                                   <td>{{$transaction->category->name}}</td>
-                                   <td>{{$transaction->date}}</td>
-                                   <td> <span class="text-bg-success p-1 m-2 rounded-circle"></span>{{ config('app.transaction_statuses')[$transaction->status] ?? $transaction->status }}</td>
-                                   <td>{{$transaction->amount}}</td>
-                                   <td>{{$transaction->notes}}</td>
-                                </tr>
-                                   @endforeach
-                            </tbody>
+                                @if(!$transactions->isEmpty())
+                                    @foreach ($transactions as $transaction)
+                                        <tr>
+                                            <td>{{ $transaction->title }}</td>
+                                            <td>{{ $transaction->category->name ?? '—' }}</td>
+                                            <td>{{ $transaction->date }}</td>
+                                            <td>
+                                                <span class="text-bg-success p-1 m-2 rounded-circle"></span>
+                                                <span class="badge {{ $transaction->status == 1 ? 'text-bg-warning' : ($transaction->status == 0 ? 'text-bg-success' : ($transaction->status == 2 ? 'text-bg-danger' : 'text-bg-secondary')) }} p-1 m-2 rounded-circle"></span>
+                                                {{ config('app.transaction_statuses')[$transaction->status] ?? $transaction->status }}
+                                            </td>
+                                            <td>{{ $transaction->amount }}</td>
+                                            <td>{{ $transaction->notes ?? '—' }}</td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="6" class="text-center">No Transactions</td>
+                                    </tr>
+                                @endif
+                            </tbody>                            
                         </table>
-                        <div class="d-flex align-items-center justify-content-end py-1">
-                            <p class="mb-0 fs-2">Rows per page:</p>
-                            <select class="form-select w-auto ms-0 ms-sm-2 me-8 me-sm-4 py-1 pe-7 ps-2 border-0"
-                                aria-label="Default select example">
-                                <option selected="">5</option>
-                                <option value="1">10</option>
-                                <option value="2">25</option>
-                            </select>
-                            <p class="mb-0 fs-2">1–5 of 12</p>
-                            <nav aria-label="...">
-                                <ul class="pagination justify-content-center mb-0 ms-8 ms-sm-9">
-                                    <li class="page-item p-1">
-                                        <a class="page-link border-0 rounded-circle text-dark fs-6 round-32 d-flex align-items-center justify-content-center"
-                                            href="javascript:void(0)">
-                                            <i class="ti ti-chevron-left"></i>
-                                        </a>
-                                    </li>
-                                    <li class="page-item p-1">
-                                        <a class="page-link border-0 rounded-circle text-dark fs-6 round-32 d-flex align-items-center justify-content-center"
-                                            href="javascript:void(0)">
-                                            <i class="ti ti-chevron-right"></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </nav>
-                        </div>
+                        {{ $transactions->links() }}
                     </div>
 
                 </div>
