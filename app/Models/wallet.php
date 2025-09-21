@@ -15,4 +15,20 @@ class wallet extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+public function category()
+{
+    return $this->belongsTo(Category::class, 'type');
+}
+
+public function goals()
+    {
+        return $this->belongsToMany(Goal::class, 'goal_wallets')
+                    ->withPivot('amount')
+                    ->withTimestamps();
+    }
+    public function transactions()
+    {
+        return $this->hasMany(GoalTransaction::class);
+    }
 }

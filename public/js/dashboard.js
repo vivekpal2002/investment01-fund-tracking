@@ -253,28 +253,67 @@ renderMiniBarChart("#bar_column_1", monthlyData, "#FF6B6B");
 renderMiniBarChart("#bar_column_2", savingData, "#4CAF50");
 renderMiniBarChart("#bar_column_3", incomeData, "#FF9800");
 
+
+
 })
 document.addEventListener('DOMContentLoaded', function () {
-    var calendarEl = document.getElementById('calendar');
-    
 
-    if (!isAuthenticated) {
-        // User is not authenticated
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth'
-        });
-        calendar.render();
-    } else {
-        // User is authenticated
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            events: '/api/expenses/by-date', // JSON route
-            eventClick: function(info) {
-                alert('You spent on ' + info.event.startStr + ': ' + info.event.title);
-            }
-            
-        });
-        calendar.render();
-    }
-  });
+  // ==============================
+  // 📅 FullCalendar
+  // ==============================
+  var calendarEl = document.getElementById('calendar');
+
+  if (calendarEl) { // ✅ Prevent error if #calendar is not on page
+      if (typeof isAuthenticated !== "undefined" && !isAuthenticated) {
+          // User is not authenticated
+          var calendar = new FullCalendar.Calendar(calendarEl, {
+              initialView: 'dayGridMonth'
+          });
+          calendar.render();
+      } else {
+          // User is authenticated
+          var calendar = new FullCalendar.Calendar(calendarEl, {
+              initialView: 'dayGridMonth',
+              events: '/api/expenses/by-date', // JSON route
+              eventClick: function (info) {
+                  alert('You spent on ' + info.event.startStr + ': ' + info.event.title);
+              }
+          });
+          calendar.render();
+      }
+  }
+
+  // ==============================
+  // 📊 Budget Chart (Chart.js)
+  // ==============================
+  const canvas = document.getElementById('overallBudgetChart');
+
+
+  if (canvas) { // ✅ Prevent error if #overallBudgetChart is missing
+      const budgets = JSON.parse(canvas.dataset.budgets);
+
+      const labels = budgets.map(b => b.name);
+      const spentData = budgets.map(b => b.spent);
+      const remainingData = budgets.map(b => b.budget);
+
+      new Chart(canvas, {
+          type: 'bar',
+          data: {
+              labels: labels,
+              datasets: [
+                  { label: 'Spent', data: spentData, backgroundColor: '#f87171' },
+                  { label: 'Remaining', data: remainingData, backgroundColor: '#34d399' }
+              ]
+          },
+          options: {
+              responsive: true,
+              scales: {
+                  y: { beginAtZero: true }
+              }
+          }
+      });
+  }
+});
+
+
 

@@ -16,20 +16,31 @@
  </head>
 
  <body>
-     @include('barmenu.menu')
-     <div class="body-wrapper-inner">
-         <!-- Breadcrumb section -->
-         <div class="container-fluid">
+    @include('barmenu.menu')
+    <div class="body-wrapper-inner">
+        <!-- Breadcrumb -->
+        <div class="container-fluid">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ url('/') }}">Home</a></li>
                     @yield('breadcrumb')
                 </ol>
             </nav>
-             @yield('maincontents')
-         </div>
-     </div>
- </body>
+            @yield('maincontents')
+        </div>
+    </div>
+
+    <!-- Global Loader (keep outside body-wrapper-inner so it overlays everything) -->
+    <div id="global-loader">
+        <div id="load_container">
+            <div class="circle"></div>
+            <div class="loader1"></div>
+            <div class="loader2"></div>
+            <div class="loader3"></div>
+            <div class="loader4"></div>
+        </div>
+    </div>
+</body>
 <script src="{{ asset('libs/jquery/dist/jquery.min.js') }}"></script>
 
 <script src="{{ asset('libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
@@ -42,8 +53,11 @@
 
 <script src="{{ asset('js/dashboard.js') }}"></script>
 <script src="{{ asset('js/content.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
 <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
+
+
 
  </html>

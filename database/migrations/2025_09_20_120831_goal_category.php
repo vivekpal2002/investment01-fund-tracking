@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('goal_category', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->integer('type'); // used for dynamic UI filtering
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('goal_category');
     }
 };

@@ -1,10 +1,13 @@
 <?php
 
-use App\Http\Controllers\OperationController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\WalletController;
+use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\GoalController;
+use App\Http\Controllers\OperationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Http\Request;
 
 
 Route::get('/', function () {
@@ -40,14 +43,32 @@ Route::post('/email/verification-notification', function (Request $request) {
 // ----------wallet---------
 Route::get('wallet',[OperationController::class,'wallet'])->name('wallet');
 
+//-------add-account wallet--------
+Route::post('add-account',[WalletController::class,'add_wallet'])->name('wallet.add_wallet');
+
+//-------add-transaction wallet--------
+Route::post('add-transaction',[WalletController::class,'add_transaction'])->name('wallet.transaction');
+
 // -------------expenses--------------
 Route::get('expenses',[OperationController::class,'expenses'])->name('expenses');
+
+//------------create-expense budget.create
+Route::post('/create-expenses',[ExpenseController::class,'expenseCreate'])->name('budget.create');
+
 
 // -------------mutualfunds--------------
 Route::get('mutualfunds',[OperationController::class,'mutualfunds'])->name('mutualfunds');
 
+Route::get('/stock-data/{id}', [OperationController::class, 'stockData'])->name('stocks.data');
+
+Route::get('/stocks/create', [OperationController::class, 'create_stock'])->name('stocks.create');
+
+
 // ------------goals----------
 Route::get('goals',[OperationController::class,'goal'])->name('goals');
+
+// -----------create-goal----------
+Route::post('/create-goal',[GoalController::class,'goalCreate'])->name('goal.create');
 
 // -------------report--------------
 Route::get('report',[OperationController::class,'report'])->name('report');

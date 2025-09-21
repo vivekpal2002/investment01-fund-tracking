@@ -15,10 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete(); // Optional
-            $table->string('title');
-            $table->enum('type', ['credit', 'debit']);
-            $table->decimal('amount', 10, 2);
-            $table->date('date');
+            $table->string('name');
+            $table->decimal('balance', 10, 2);
+            $table->string('notes');
+            $table->date('expiry_date')->nullable();
+            $table->date('acc_created_at');
             $table->timestamps();
         });
 
