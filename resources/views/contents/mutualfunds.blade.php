@@ -1,198 +1,227 @@
 @extends('layout.contentslayout')
-@section('title', 'Mutual-Funds')
+@section('title', 'Stocks')
 @section('breadcrumb')
-    <li class="breadcrumb-item active" aria-current="page">Mutual-Funds</li>
+    <li class="breadcrumb-item active" aria-current="page">Stocks</li>
 @endsection
+
 @section('maincontents')
-<?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+<h1 class="font-weight">Stocks</h1>
 
-// Fetch from Alpha Vantage API
-$json = file_get_contents('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&apikey=demo');
-$data = json_decode($json, true);
+<div class="row">
 
-$stockname=($data['Meta Data']['2. Symbol']);
-// Extract time series data
-$timeSeries = $data['Time Series (Daily)'] ?? [];
-
-// Prepare arrays
-$dates = [];
-$navs = [];
-
-// Loop through only the last 10 entries
-foreach (array_slice($timeSeries, 0, 10) as $date => $info) {
-    $formattedDate = date('M d', strtotime($date)); // Format as "Jul 17"
-    $dates[] = $formattedDate;
-    $navs[] = (float)$info['4. close'];
-}
-
-// Reverse for chronological order
-$dates = array_reverse($dates);
-$navs = array_reverse($navs);
-?>
-
-
-
-    <h1 class="font-weight">Mutual-Funds</h1>
-    <div class="row">
-
-        @foreach ($investments as $investment)
-            <div class="col-xl-3 col-lg-6 col-sm-6 col-12 pb-3">
-                <div class="card shadow-sm border-0 h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <button type="button" class="btn btn-sm btn-{{ $investment->color ?? 'dark' }} rounded-pill">
-                                <i class="fa fa-{{ $investment->icon ?? 'briefcase' }} me-1"></i>
-                                {{ $investment->name }}
-                            </button>
-                            <div class="text-end">
-                                <a href="#" class="text-dark fw-semibold d-block">{{ $investment->ticker }}</a>
-                                <span class="{{ $investment->change >= 0 ? 'text-success' : 'text-danger' }} small">
-                                    {{ $investment->change >= 0 ? '+' : '' }}{{ $investment->change }}%
-                                </span>
-                            </div>
+    {{-- Stock Cards --}}
+    @foreach ($stocks as $stock)
+        <div class="col-xl-3 col-lg-6 col-sm-6 col-12 pb-3">
+            <div class="card shadow-sm border-0 h-100 stock-card" 
+                 data-id="{{ $stock->id }}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <button type="button" 
+                                class="btn btn-sm btn-{{ $stock->color ?? 'dark' }} rounded-pill">
+                            <i class="fa fa-{{ $stock->icon ?? 'briefcase' }} me-1"></i>
+                            {{ $stock->name }}
+                        </button>
+                        <div class="text-end">
+                            <a href="#" class="text-dark fw-semibold d-block">{{ $stock->ticker }}</a>
+                            <span class="{{ $stock->change_percent >= 0 ? 'text-success' : 'text-danger' }} small">
+                                {{ $stock->change_percent >= 0 ? '+' : '' }}{{ $stock->change_percent }}%
+                            </span>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="text-muted mb-1 small">Portfolio</p>
-                                <h4 class="fw-bold mb-0">₹{{ number_format($investment->value, 2) }}</h4>
-                            </div>
-                            <div class="sparkline-chart" style="width: 100px; height: 40px;"></div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small">Portfolio Value</p>
+                            <h4 class="fw-bold mb-0">₹{{ number_format($stock->quantity * $stock->current_price, 2) }}</h4>
                         </div>
+                        <div class="sparkline-chart" style="width: 100px; height: 40px;"></div>
                     </div>
                 </div>
             </div>
-        @endforeach
+        </div>
+    @endforeach
+
+    {{-- Add Stock Card --}}
+
         <div class="col-xl-3 col-lg-6 col-sm-6 col-12 pb-3">
             <div class="card shadow-sm border-dashed border-1 border-secondary h-100 text-center d-flex align-items-center justify-content-center"
-                style="min-height: 150px;">
-                {{-- <a href="{{ route('investments.create') }}" class="text-secondary text-decoration-none"> --}}
+                style="min-height: 150px;" data-bs-toggle="modal" data-bs-target="#addStockModal">
                 <i class="fa fa-plus-circle fa-2x mb-2"></i>
                 <p class="mb-0">Add Stock</p>
-                </a>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xl-8 col-lg-12 pt-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3 class="mb-0">📈 NAV Performance</h3>
-            </div>
+</div>
 
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="fw-semibold mb-3"> {{$stockname}}</h5>
-
-                    <!-- Chart Container -->
-                    <div id="main-performance-graph" style="height: 350x;"></div>
-                </div>
-            </div>
+{{-- Chart + Details Section --}}
+<div class="row">
+    <div class="col-xl-8 col-lg-12 pt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="mb-0">📈 Stock Performance</h3>
         </div>
-        <div class="col-xl-4 col-lg-6 col-md-12 mb-4 pt-4">
-            <h4 class="mb-3 d-flex justify-content-between align-items-center">
-                <span>Details</span>
-            </h4>
 
-            <!-- Info Card -->
-            <div class="card mb-3 shadow-sm">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="text-success mb-0">S&P 500</h5>
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            24 h
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#"><i class="ti-import me-2"></i>Import</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="ti-export me-2"></i>Export</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="ti-printer me-2"></i>Print</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="#"><i class="ti-settings me-2"></i>Settings</a></li>
-                        </ul>
-                    </div>
-                </div>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="fw-semibold mb-3" id="stock-title">{{ $defaultStock->name ?? 'Select a Stock' }}</h5>
 
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span class="text-muted">Previous Close</span>
-                        <span>4,500.50</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span class="text-muted">Day Range</span>
-                        <span>3,588 – 5,415</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span class="text-muted">Year Range</span>
-                        <span>6,200 – 4,500</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span class="text-muted">Market Cap</span>
-                        <span>$90.3T USD</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span class="text-muted">Volume</span>
-                        <span>3,852,852</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span class="text-muted">P/E Ratio</span>
-                        <span>51.05</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <span class="text-muted">Exchange</span>
-                        <span>Index</span>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Market Cap Card -->
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
-                            style="width: 50px; height: 50px;">
-                            <strong class="fs-4">M</strong>
-                        </div>
-                        <div class="ms-3">
-                            <p class="mb-1 text-muted small">Market Cap</p>
-                            <h5 class="mb-0 fw-semibold">$40</h5>
-                        </div>
-                    </div>
-                </div>
+                <!-- Chart Container -->
+                <div id="main-performance-graph" style="height: 350px;"></div>
             </div>
         </div>
     </div>
 
+    {{-- Right Panel - Stock Info --}}
+    <div class="col-xl-4 col-lg-6 col-md-12 mb-4 pt-4">
+        <h4 class="mb-3 d-flex justify-content-between align-items-center">
+            <span>Details</span>
+        </h4>
+
+        <div class="card mb-3 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="text-success mb-0" id="detail-ticker">---</h5>
+            </div>
+            <ul class="list-group list-group-flush" id="stock-details">
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">Previous Close</span>
+                    <span id="detail-close">---</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">Day Range</span>
+                    <span id="detail-dayrange">---</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">Year Range</span>
+                    <span id="detail-yearrange">---</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">Market Cap</span>
+                    <span id="detail-marketcap">---</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">Volume</span>
+                    <span id="detail-volume">---</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">P/E Ratio</span>
+                    <span id="detail-pe">---</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">Exchange</span>
+                    <span id="detail-exchange">---</span>
+                </li>
+            </ul>
+        </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="addStockModal" tabindex="-1">
+    <div class="modal-dialog">
+      <form method="POST" action="{{ route('stocks.create') }}">
+          @csrf
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Add New Stock</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label class="form-label">Stock Name</label>
+                <input type="text" name="name" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Ticker</label>
+                <input type="text" name="ticker" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Quantity</label>
+                <input type="number" name="quantity" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Average Price</label>
+                <input type="number" step="0.01" name="avg_price" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Exchange</label>
+                <input type="text" name="exchange" class="form-control">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Sector</label>
+                <input type="text" name="sector" class="form-control">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Icon</label>
+                <input type="text" name="icon" class="form-control" placeholder="fa-briefcase">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Color</label>
+                <input type="text" name="color" class="form-control" placeholder="primary">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Save Stock</button>
+            </div>
+          </div>
+      </form>
+    </div>
+  </div>
+  
+  
 
-    <script>
-        let categories = <?php echo json_encode($dates); ?>;
-        let dataPoints = <?php echo json_encode($navs); ?>;
-
-        let largeChartOptions = {
+{{-- Scripts --}}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Initialize chart
+        let chartOptions = {
             chart: {
                 type: 'line',
-                zoom: {
-            enabled: false
-          },
                 height: 335,
                 toolbar: { show: false }
             },
-            series: [{
-                name: 'NAV',
-                data: dataPoints
-            }],
-            xaxis: {
-                categories: categories
-            },
+            series: [{ name: 'Price', data: [] }],
+            xaxis: { categories: [] },
             stroke: { curve: 'smooth', width: 3 },
             colors: ['#007bff'],
             markers: { size: 4 }
         };
-
-        new ApexCharts(document.querySelector("#main-performance-graph"), largeChartOptions).render();
+    
+        let chart = new ApexCharts(document.querySelector("#main-performance-graph"), chartOptions);
+        chart.render().then(() => {
+            // Optionally load first stock on page load
+            let firstCard = document.querySelector('.stock-card');
+            if(firstCard) firstCard.click();
+        });
+    
+        // Function to update chart and details
+        function updateStockData(data) {
+            // Ensure numeric prices
+            data.prices = data.prices.map(p => parseFloat(p));
+    
+            // Update chart
+            chart.updateOptions({ xaxis: { categories: data.dates } });
+            chart.updateSeries([{ name: "Price", data: data.prices }]);
+    
+            // Update stock info panel
+            document.querySelector("#stock-title").innerText = data.stockname;
+            document.querySelector("#detail-ticker").innerText = data.ticker;
+            document.querySelector("#detail-close").innerText = data.previous_close ?? "---";
+            document.querySelector("#detail-dayrange").innerText = data.day_range ?? "---";
+            document.querySelector("#detail-yearrange").innerText = data.year_range ?? "---";
+            document.querySelector("#detail-marketcap").innerText = data.market_cap ?? "---";
+            document.querySelector("#detail-volume").innerText = data.volume ?? "---";
+            document.querySelector("#detail-pe").innerText = data.pe_ratio ?? "---";
+            document.querySelector("#detail-exchange").innerText = data.exchange ?? "---";
+        }
+    
+        // Card click handler
+        document.querySelectorAll('.stock-card').forEach(card => {
+            card.addEventListener('click', function () {
+                let stockId = this.dataset.id;
+                fetch(`/stock-data/${stockId}`)
+                    .then(res => res.json())
+                    .then(data => updateStockData(data))
+                    .catch(err => console.error("Error fetching stock data:", err));
+            });
+        });
+    });
     </script>
-
+    
 @endsection

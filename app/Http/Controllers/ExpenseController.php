@@ -3,62 +3,79 @@
 namespace App\Http\Controllers;
 
 use App\Models\expense;
+use App\Models\category;
+use App\Models\transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 class ExpenseController extends Controller
 {
     public function byDate(Request $request)
 {
+        $start = $request->query('start'); // ISO string from FullCalendar
+        $end = $request->query('end');
 
-    // $userId = auth()->id(); // or pass ID in query param
+        if (!$start || !$end) {
+            return response()->json(['error' => 'Missing date range'], 400);
+        }
 
-    // $expenses = DB::table('expenses')
-    //     ->selectRaw('DATE(date) as date, SUM(amount) as total')
-    //     // ->where('user_id', $userId)
-    //     ->groupBy(DB::raw('DATE(date)'))
-    //     ->get();
+        // Fetch transactions for the authenticated user (or guest logic)
+        $transactions = transaction::whereBetween('date', [$start, $end])
+            ->when(Auth::check(), function ($query) {
+                $query->where('user_id', Auth::id());
+            })
+            ->get();
 
-    // $events = $expenses->map(function ($expense) {
-    //     return [
-    //         'title' => '$' . number_format($expense->total, 2) . ' spent',
-    //         'start' => $expense->date,
-    //     ];
-    // });
-    $start = $request->query('start');
-    $end = $request->query('end');
+        // Map to FullCalendar format
+        $events = $transactions->map(function ($txn) {
+            return [
+                'title' => $txn->title . ' (₹' . $txn->amount . ')',
+                'start' => $txn->date,
+                'color' => '#f44336', // Optional
+            ];
+        });
 
-    $events = [
-        ['title' => '₹250 spent', 'start' => '2025-07-16'],
-        ['title' => '₹100 spent', 'start' => '2025-07-15'],
-        // ...
-    ];
+        return response()->json($events);
+    }
+    public function expenseCreate(Request $request)
+    {
+        $validate = $request->validate([
+            'ename'        => 'required|string|max:255',
+            'type_of_fund' => 'required|numeric',
+            'target'       => 'required|numeric|min:0',
+        ]);
+        $categoryId = $request->category_id;
 
-    return response()->json($events);
-    // dd($request->all());
-    // $start = $request->query('start'); // FullCalendar sends these as ISO strings
-    // $end = $request->query('end');
+        if($categoryId){
+            // Update existing category / expense
+            $category = category::find($categoryId);
+            $category->name = $request->ename;
+            $category->type = $request->type_of_fund;
+            $category->save();
 
-    // if (!$start || !$end) {
-    //     return response()->json(['error' => 'Missing date range'], 400);
-    // }
+            $expense = expense::where('category_id', $categoryId)->first();
+            if($expense){
+                $expense->target = $request->target;
+                $expense->save();
+            }
+        } else {
+            // Create new category and expense
+            $category = new Category();
+            $category->name = $request->ename;
+            $category->type = $request->type_of_fund;
+            $category->user_id = Auth::id();
+            $category->save();
 
-    // // For guest testing, use sample data. If user logged in, use auth()->id()
-    // $expenses = expense::whereBetween('date', [$start, $end])
-    //     ->when(Auth::check(), function ($query) {
-    //         $query->where('user_id', Auth::id());
-    //     })
-    //     ->get();
+            $expense = new Expense();
+            $expense->category_id = $category->id;
+            $expense->target = $request->target;
+            $expense->save();
+        }
 
-    // $events = $expenses->map(function ($expense) {
-    //     return [
-    //         'title'=>$expense->title,
-    //         'Amount' => '₹' . $expense->amount,
-    //         'start' => $expense->date,
-    //         'color' => '#f44336'
-    //     ];
-    // });
-
-    // return response()->json($events);
+    
+        return redirect()->back()->with('message', 'Expense Category & Budget Created');
+    }
+  
 }
 
-}
+

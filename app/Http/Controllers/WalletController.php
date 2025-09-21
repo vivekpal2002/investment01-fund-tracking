@@ -68,12 +68,11 @@ class WalletController extends Controller
     // Update wallet balance
     $wallet = wallet::where('user_id',Auth::id())->find($validatedData['wallet_id']);
     if ($wallet) {
-        if ($validatedData['payment_type'] == 0) { // Income
+        if ($validatedData['payment_type'] == 'Money received') { // Income
             $wallet->balance += $validatedData['amount'];
-        } elseif ($validatedData['payment_type'] == 1) { // Expense
+        } elseif ($validatedData['payment_type'] == 'Money sent') { // Expense
             $wallet->balance -= $validatedData['amount'];
         }
-
     }
         $wallet->save();
 

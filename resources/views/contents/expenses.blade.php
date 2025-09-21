@@ -6,14 +6,25 @@
 @section('maincontents')
     <h1 class="font-weight">Expense Management</h1>
     <div class="budgets-tab">
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+
+        @endif
         <div class="row g-0">
             <div class="col-xl-3">
                 <div class="nav d-block" role="tablist">
-                    <div class="row">
+                    <div class="row" style="max-height: 550px; width: 350px; overflow-y: auto;">
+                        {{-- @dd($budgets) --}}
                         @foreach ($budgets as $index => $budget)
-                            <div class="col-12 col-sm-6 col-md-6 col-lg-6 col-xl-10 ">
+                            <div class="col-12 mb-2 mt-3">
                                 <div class="card shadow-sm w-100 {{ $index === 0 ? 'border-primary' : '' }}"
-                                    data-bs-toggle="pill" data-bs-target="#{{ $budget['id'] }}"
+                                    data-bs-toggle="pill" data-bs-target="#budget-{{ $budget['id'] }}"
                                     aria-selected="{{ $index === 0 ? 'true' : 'false' }}" role="tab">
 
                                     <div class="card-body d-flex flex-column justify-content-between">
@@ -22,8 +33,8 @@
                                             <div class="d-flex align-items-center gap-3">
                                                 <div>
                                                     <h5 class="mb-0">{{ $budget['name'] }}</h5>
-                                                    <small class="text-muted">₹{{ $budget['amount'] }}</small><br>
-                                                    @if ($budget['amount'] <= 0)
+                                                    <small class="text-muted">₹{{ $budget['budget'] }}</small><br>
+                                                    @if ($budget['budget'] <= 0)
                                                         <small class="text-danger fw-bolder"> • Add the your traget of this
                                                             month</small>
                                                     @endif
@@ -39,96 +50,82 @@
                                             </div>
                                             <div class="progress rounded-pill" style="height: 6px;">
                                                 <div class="progress-bar bg-primary"
-                                                    style="width: {{ round(($budget['spent'] / $budget['budget']) * 100, 2) }}%;">
+                                                    style="width: {{ $budget['utilization'] }}%;">
                                                 </div>
                                             </div>
                                             <div class="d-flex justify-content-between mt-2 small">
-                                                <span
-                                                    class="fw-semibold">{{ round(($budget['spent'] / $budget['budget']) * 100) }}%</span>
-                                                <span class="text-success">On track</span>
+                                                <span class="fw-semibold">{{ $budget['utilization'] }}%</span>
+                                                <span class="text-success" data-bs-toggle="modal"
+                                                    data-bs-target="#addexpense" data-id="{{ $budget['id'] }}"
+                                                    data-name="{{ $budget['name'] }}"
+                                                    data-target="{{ $budget['budget'] }}"
+                                                    data-type="{{ $budget['type'] ?? 1 }}">
+                                                    Update track
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         @endforeach
-
-                        <div class="col-12 col-sm-6 col-md-6 col-lg-5 col-xl-12 p-3">
-                            <div class="budgets-nav w-75">
-                                <h5 class="mb-0" data-bs-toggle="modal" data-bs-target="#addexpense">Add new budget <i class="ti ti-circle-plus ps-xl-2"></i></h5>
-                            </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-6 col-lg-5 col-xl-12 p-3">
+                        <div class="budgets-nav w-75">
+                            <h5 class="mb-0" data-bs-toggle="modal" data-bs-target="#addexpense" data-id=""
+                                data-name="" data-target="" data-type="">
+                                Add new budget <i class="ti ti-circle-plus ps-xl-2"></i></h5>
                         </div>
-                        <!--Add Expense Modal -->
-                        <div class="modal fade" id="addexpense" tabindex="-1" aria-labelledby="addexpense"
-                            aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header d-flex align-items-center">
-                                        <h4 class="modal-title" id="myLargeModalLabel">
-                                            Add Expense
-                                        </h4>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form action={{ route('budget.create') }} method="POST">
-                                            @csrf
+                    </div>
+                    <!--Add Expense Modal -->
+                    <div class="modal fade" id="addexpense" tabindex="-1" aria-labelledby="addexpense"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header d-flex align-items-center">
+                                    <h4 class="modal-title">Add / Update Expense</h4>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{{ route('budget.create') }}" method="POST" id="expenseForm">
+                                        @csrf
+                                        <input type="hidden" name="category_id" id="category_id">
 
-                                            <div class="mb-3">
-                                                <label for="name" class="form-label">Account Name</label>
-                                                <input type="text" class="form-control" name="name" required>
-                                            </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Expense Name</label>
+                                            <input type="text" class="form-control" name="ename" id="ename"
+                                                required>
+                                        </div>
 
-                                            <div class="mb-3">
-                                                <label for="name" class="form-label">Bank Account Name</label>
-                                                <input type="text" class="form-control" name="bank_name" required
-                                                    placeholder="e.g., SBI Bank, Indian Bank...">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="balance" class="form-label">Initial Balance (₹)</label>
-                                                <input type="number" step="0.01" class="form-control" name="balance"
-                                                    required>
-                                            </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Target (₹)</label>
+                                            <input type="number" step="0.01" class="form-control" name="target"
+                                                id="target" required>
+                                        </div>
 
-                                            <div class="mb-3" id="expiryDiv" style="display: none;">
-                                                <label for="expiry_date" class="form-label">Expiry Date</label>
-                                                <input type="month" class="form-control" name="expiry_date"
-                                                    placeholder="MM/YYYY">
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label for="notes" class="form-label">Notes (optional)</label>
-                                                <textarea name="notes" class="form-control" rows="2" placeholder="e.g., My main bank account"></textarea>
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label for="acc_created_at" class="form-label">Date Created</label>
-                                                <input type="date" name="acc_created_at" class="form-control">
-                                            </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="submit" class="btn btn-primary  waves-effect text-start"
-                                            data-bs-dismiss="modal">
-                                            Create Expense
-                                        </button>
-                                        <button type="button"
-                                            class="btn bg-danger-subtle text-danger  waves-effect text-start"
-                                            data-bs-dismiss="modal">
-                                            Close
-                                        </button>
-                                        </form>
-                                    </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Type of Payment</label>
+                                            <select name="type_of_fund" class="form-select" id="type_of_fund">
+                                                @foreach (config('app.type_of_fund') as $key => $value)
+                                                    <option value="{{ $key }}">{{ $value }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Save Expense</button>
+                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
             <div class="col-xl-9">
                 <div class="tab-content budgets-tab-content">
                     @foreach ($budgets as $index => $budget)
-                        <div class="tab-pane {{ $index === 0 ? 'show active' : '' }}" id="{{ $budget['id'] }}"
+                        <div class="tab-pane {{ $index === 0 ? 'show active' : '' }}" id="budget-{{ $budget['id'] }}"
                             role="tabpanel">
                             <div class="d-flex justify-content-between align-items-start pb-3">
                                 <div>
@@ -139,7 +136,7 @@
                             </div>
 
                             <!-- Cards: Total Budget, Spent, Remaining -->
-                            <div class="row g-3">
+                            <div class="row g-4">
                                 <div class="col-md-4">
                                     <x-budget-card title="Total Budget" value="₹{{ $budget['budget'] }}"
                                         icon="fi fi-rr-dollar" color="primary" />
@@ -166,7 +163,7 @@
                                     </div>
                                     <div class="progress rounded-pill">
                                         <div class="progress-bar bg-warning"
-                                            style="width: {{ round(($budget['spent'] / $budget['budget']) * 100) }}%;">
+                                            style="width: {{ $budget['utilization'] }}%;">
                                         </div>
                                     </div>
                                 </div>
@@ -196,24 +193,61 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- ChartJS -->
-                            <div class="card mt-3">
-                                <div class="card-header">
-                                    <h4 class="card-title">Budget Period</h4>
-                                </div>
-                                <div class="card mt-3">
-                                    <div class="card-body">
-                                        <canvas id="overallBudgetChart" data-budgets='@json($budgets)' height="100"></canvas>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     @endforeach
+                </div>
+                <!-- ChartJS -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h4 class="card-title">Budget Period</h4>
+                    </div>
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <canvas id="overallBudgetChart" data-budgets='@json($budgets)'
+                                height="100"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        document.querySelectorAll('.card[data-bs-toggle="pill"]').forEach(card => {
+    card.addEventListener('click', function() {
+        const targetId = this.getAttribute('data-bs-target');
+        const targetContent = document.querySelector(targetId);
 
+        if (!targetContent) return; // safety check
+
+        // Remove 'show active' from all tab panes
+        document.querySelectorAll('.budgets-tab-content .tab-pane').forEach(pane => {
+            pane.classList.remove('show', 'active');
+        });
+
+        // Show the selected pane
+        targetContent.classList.add('show', 'active');
+    });
+});
+
+        var addExpenseModal = document.getElementById('addexpense');
+
+        addExpenseModal.addEventListener('show.bs.modal', function(event) {
+            var button = event.relatedTarget;
+
+            var id = button.getAttribute('data-id');
+            var name = button.getAttribute('data-name') || '';
+            var target = button.getAttribute('data-target') || '';
+            var type = button.getAttribute('data-type') || '1';
+
+            // Set form fields
+            document.getElementById('category_id').value = id;
+            document.getElementById('ename').value = name;
+            document.getElementById('target').value = target;
+            document.getElementById('type_of_fund').value = type;
+
+            // Optional: change modal title dynamically
+            addExpenseModal.querySelector('.modal-title').textContent = id ? 'Update Expense' : 'Add Expense';
+        });
+    </script>
 
 @endsection

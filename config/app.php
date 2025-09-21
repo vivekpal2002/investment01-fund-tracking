@@ -132,5 +132,11 @@ return [
         1=>'Money received',
         2=>'Money request',
     ],
+    'type_of_fund'=>[
+        1=>'Spending',
+        2=>'Saving',
+        3=>'Lend Money',
+        4=>'Others',
+    ],
 
 ];

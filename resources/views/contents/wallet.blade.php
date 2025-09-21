@@ -7,15 +7,15 @@
     <h1 class="font-weight">Wallet & Transactions</h1>
     <div class="row mt-7 justify-content-sm-between">
 
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
             <div class="d-flex flex-column gap-3">
                 <button type="button" class="btn rounded-pill btn-outline-primary fs-5" data-bs-toggle="modal"
@@ -61,7 +61,9 @@
                                 <label for="type" class="form-label">Account Type</label>
                                 <select name="type" class="form-select" id="accountType" required>
                                     @foreach ($categories as $cat)
-                                        <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                        @if ($cat->type == 0)
+                                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                        @endif
                                     @endforeach
                                 </select>
                             </div>
@@ -80,9 +82,6 @@
                                 <label for="acc_created_at" class="form-label">Date Created</label>
                                 <input type="date" name="acc_created_at" class="form-control">
                             </div>
-
-
-
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary  waves-effect text-start" data-bs-dismiss="modal">
@@ -120,8 +119,10 @@
                             <div class="mb-3">
                                 <label for="type" class="form-label">Transaction Method</label>
                                 <select name="type" class="form-select" required>
-                                   @foreach ($categories as $cat)
-                                        <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                    @foreach ($categories as $cat)
+                                        @if ($cat->type == 0)
+                                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                        @endif
                                     @endforeach
                                 </select>
                             </div>
@@ -151,10 +152,11 @@
 
                             <div class="mb-3">
                                 <label for="category_id" class="form-label">Category (optional)</label>
-                                <select name="category_id" class="form-select"  size="5" style="max-height: 150px; overflow-y: auto;">
-
-                                    @foreach ($Trans_categories as $category)
-                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                <select name="category_id" class="form-select">
+                                    @foreach ($categories as $cat)
+                                        @if ($cat->type != 0)
+                                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                        @endif
                                     @endforeach
                                 </select>
                             </div>
@@ -186,30 +188,30 @@
                             Close
                         </button>
                     </div>
-                     </form>
+                    </form>
                 </div>
             </div>
         </div>
         <div class="col-12 col-sm-6 col-md-4 col-lg-4 mb-3">
-        {{-- <div class="col-12 col-md-4 mx-3 h-100 rounded-3"> --}}
+            {{-- <div class="col-12 col-md-4 mx-3 h-100 rounded-3"> --}}
             <div class="card  bg-primary-subtle">
                 <div class="card-body">
                     <p class="mb-1 fs-3">Total Balance</p>
-                    <h2 class="mb-2 fs-4">₹{{$total_balance}}</h2>
+                    <h2 class="mb-2 fs-4">₹{{ $total_balance }}</h2>
 
                     <div class="d-flex justify-content-between mb-2">
                         <p class="text-muted mb-0 fs-3">Personal Funds</p>
-                        <span class="fw-medium fs-4">₹{{$personal_funds ??0.00}}</span>
+                        <span class="fw-medium fs-4">₹{{ $personal_funds ?? 0.0 }}</span>
                     </div>
 
                     <div class="d-flex justify-content-between mb-2">
                         <p class="text-muted mb-0 fs-3">Credit Limits</p>
-                        <span class="fw-medium fs-4">₹{{ $credit_cards ?? 0.00}}</span>
+                        <span class="fw-medium fs-4">₹{{ $credit_cards ?? 0.0 }}</span>
                     </div>
 
                     <div class="d-flex justify-content-between">
                         <p class="text-muted mb-0 fs-3">Investments</p>
-                        <span class="fw-medium fs-4">₹{{ $investments ?? 0.00}}</span>
+                        <span class="fw-medium fs-4">₹{{ $investments ?? 0.0 }}</span>
                     </div>
                 </div>
             </div>
@@ -262,7 +264,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @if(!$transactions->isEmpty())
+                                @if (!$transactions->isEmpty())
                                     @foreach ($transactions as $transaction)
                                         <tr>
                                             <td>{{ $transaction->title }}</td>
@@ -270,7 +272,8 @@
                                             <td>{{ $transaction->date }}</td>
                                             <td>
                                                 <span class="text-bg-success p-1 m-2 rounded-circle"></span>
-                                                <span class="badge {{ $transaction->status == 1 ? 'text-bg-warning' : ($transaction->status == 0 ? 'text-bg-success' : ($transaction->status == 2 ? 'text-bg-danger' : 'text-bg-secondary')) }} p-1 m-2 rounded-circle"></span>
+                                                <span
+                                                    class="badge {{ $transaction->status == 1 ? 'text-bg-warning' : ($transaction->status == 0 ? 'text-bg-success' : ($transaction->status == 2 ? 'text-bg-danger' : 'text-bg-secondary')) }} p-1 m-2 rounded-circle"></span>
                                                 {{ config('app.transaction_statuses')[$transaction->status] ?? $transaction->status }}
                                             </td>
                                             <td>{{ $transaction->amount }}</td>
@@ -284,7 +287,7 @@
                                 @endif
                             </tbody>                            
                         </table>
-                        {{ $transactions->links() }}
+                        {{ $transactions->links('vendor.pagination.bootstrap-5') }}
                     </div>
 
                 </div>
@@ -292,32 +295,28 @@
         </div>
     </div>
 
-
-
     <script>
-const data_cardsData = @json($wallets);
+        const data_cardsData = @json($wallets);
 
-let cardsData = [];
+        let cardsData = [];
 
-if (data_cardsData && data_cardsData.length > 0) {
-    cardsData = data_cardsData.map(wallet => ({
-        type: wallet.category?.name ?? 'N/A',
-        balance: "₹" + wallet.balance,
-        bank_name: wallet.bank_name ?? '',
-        holder: wallet.name,
-        expires: wallet.expiry_date ?? '—'
-    }));
-} else {
-    cardsData = [
-        {
-            type: 'N/A',
-            balance: "₹0.00",
-            bank_name: 'No Accounts',
-            holder: 'No Accounts',
-            expires: '—'
+        if (data_cardsData && data_cardsData.length > 0) {
+            cardsData = data_cardsData.map(wallet => ({
+                type: wallet.category?.name ?? 'N/A',
+                balance: "₹" + wallet.balance,
+                bank_name: wallet.bank_name ?? '',
+                holder: wallet.name,
+                expires: wallet.expiry_date ?? '—'
+            }));
+        } else {
+            cardsData = [{
+                type: 'N/A',
+                balance: "₹0.00",
+                bank_name: 'No Accounts',
+                holder: 'No Accounts',
+                expires: '—'
+            }];
         }
-    ];
-}
 
         const carouselInner = document.getElementById('cardCarouselInner');
 
