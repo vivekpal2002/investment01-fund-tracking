@@ -16450,6 +16450,19 @@ ul {
   0%, 100% { transform: scale(0); }
   50% { transform: scale(1); }
 }
+#stock-results {
+  max-height: 250px;      /* limit height */
+  overflow-y: auto;       /* scroll if too long */
+  background: #fff;       /* white background */
+  border: 1px solid #ddd; /* border */
+  border-radius: 0.25rem; 
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+#stock-results li:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
 
 
 

@@ -13,7 +13,7 @@
                             <div class="d-flex align-items-center">
                                 <span
                                     class="me-2 rounded-circle bg-danger-subtle round-20 d-flex align-items-center justify-content-center">
-                                    <i class="ti ti-arrow-down-right text-danger"></i>
+                                    <i class="ti {{ $balanace_perecent > 0 ? 'ti-arrow-up-left' : 'ti-arrow-down-right' }} text-danger"></i>
                                 </span>
                                 <p class="text-dark me-1 fs-6 mb-0">{{$balanace_perecent ?? 0}}%</p>
                                 <p class="fs-6 mb-0">last month</p>
@@ -30,9 +30,9 @@
                             <div class="d-flex align-items-center">
                                 <span
                                     class="me-2 rounded-circle bg-danger-subtle round-20 d-flex align-items-center justify-content-center">
-                                    <i class="ti ti-arrow-down-right text-danger"></i>
+                                    <i class="ti {{ $Monthly_percent > 0 ? 'ti-arrow-up-left' : 'ti-arrow-down-right' }}  text-danger"></i>
                                 </span>
-                                <p class="text-dark me-1 fs-6 mb-0">+{{$Monthly_percent ?? 0.00}}%</p>
+                                <p class="text-dark me-1 fs-6 mb-0">{{$Monthly_percent ?? 0.00}}%</p>
                                 <p class="fs-6 mb-0">last month</p>
                             </div>
                         </div>
@@ -64,9 +64,9 @@
                             <div class="d-flex align-items-center">
                                 <span
                                     class="me-2 rounded-circle bg-danger-subtle round-20 d-flex align-items-center justify-content-center">
-                                    <i class="ti ti-arrow-down-right text-danger"></i>
+                                    <i class="ti {{ $Saving_perecent > 0 ? 'ti-arrow-up-left' : 'ti-arrow-down-right' }} text-danger"></i>
                                 </span>
-                                <p class="text-dark me-1 fs-6 mb-0">+{{$Saving_perecent ?? 0}}%</p>
+                                <p class="text-dark me-1 fs-6 mb-0">{{$Saving_perecent ?? 0}}%</p>
                                 <p class="fs-6 mb-0">last month</p>
                             </div>
                         </div>
@@ -81,9 +81,9 @@
                             <div class="d-flex align-items-center">
                                 <span
                                     class="me-2 rounded-circle bg-danger-subtle round-20 d-flex align-items-center justify-content-center">
-                                    <i class="ti ti-arrow-down-right text-danger"></i>
+                                    <i class="ti {{ $Period_Income_percent > 0 ? 'ti-arrow-up-left' : 'ti-arrow-down-right' }} text-danger"></i>
                                 </span>
-                                <p class="text-dark me-1 fs-6 mb-0">+{{$Period_Income_percent ?? 0}}%</p>
+                                <p class="text-dark me-1 fs-6 mb-0">{{$Period_Income_percent ?? 0}}%</p>
                                 <p class="fs-6 mb-0">last month</p>
                             </div>
                         </div>
@@ -116,6 +116,7 @@
                                     <table class="table align-middle text-nowrap mb-0">
                                         <thead>
                                             <tr class="text-muted fw-semibold">
+                                                <th class="ps-0">Title</th>
                                                 <th class="ps-0">Category</th>
                                                 <th>Date</th>
                                                 <th>Description</th>
@@ -123,25 +124,35 @@
                                             </tr>
                                         </thead>
                                         <tbody class="border-top">
-
+                                            @if (!$recenttransactions->isEmpty())
+                                            @foreach($recenttransactions as $txn)
                                             <tr>
                                                 <td class="ps-0">
                                                     <div class="d-flex align-items-center">
-                                                        <div>
-                                                            <h6 class="fw-semibold mb-1">Sunil Joshi</h6>
-                                                        </div>
+                                                            <h6 class="fw-semibold mb-1">{{$txn->title}}</h6>
+                                                    </div>
+                                                </td>
+                                                <td class="ps-0">
+                                                    <div class="d-flex align-items-center">
+                                                            <h6 class="fw-semibold mb-1">{{$txn->category->name}}</h6>
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <p class="mb-0 fs-3">Elite Admin</p>
+                                                    <p class="mb-0 fs-3">{{$txn->date}}</p>
                                                 </td>
                                                 <td style="white-space: normal; word-break: break-word;">
-                                                    <p class="mb-0">Grocery items and beverages soft drinks</p>
+                                                    <p class="mb-0">{{$txn->notes}}</p>
                                                 </td>
                                                 <td>
-                                                    <p class="fs-3 text-dark mb-0">₹3900</p>
+                                                    <p class="fs-3 text-dark mb-0">₹{{number_format($txn->amount, 2)}}</p>
                                                 </td>
                                             </tr>
+                                                @endforeach
+                                                @else
+                                                <tr>
+                                                    <td colspan="6" class="text-center">No Transactions</td>
+                                                </tr>
+                                            @endif
                                             <!-- Add more rows as needed -->
                                         </tbody>
                                     </table>
@@ -157,7 +168,7 @@
                                 <h4 class="card-title fw-semibold">Sales Overview</h4>
                                 <p class="card-subtitle mb-2">Every Month</p>
 
-                                <div id="breakup" class="mb-4" style="min-height: 222px;"></div>
+                                <div id="breakup" class="mb-4" style="min-height: 222px; align-items: center;"></div>
 
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex align-items-center">
@@ -166,7 +177,7 @@
                                             <i class="ti ti-grid-dots fs-6"></i>
                                         </div>
                                         <div>
-                                            <h6 class="fw-semibold text-dark fs-4 mb-0">₹23,450</h6>
+                                            <h6 class="fw-semibold text-dark fs-4 mb-0">₹{{$breakupChart['series'][0]}}</h6>
                                             <p class="fs-3 mb-0 fw-normal">Profit</p>
                                         </div>
                                     </div>
@@ -176,7 +187,7 @@
                                             <i class="ti ti-grid-dots fs-6"></i>
                                         </div>
                                         <div>
-                                            <h6 class="fw-semibold text-dark fs-4 mb-0">₹23,450</h6>
+                                            <h6 class="fw-semibold text-dark fs-4 mb-0">₹{{$breakupChart['series'][1]}}</h6>
                                             <p class="fs-3 mb-0 fw-normal">Expense</p>
                                         </div>
                                     </div>
@@ -187,16 +198,15 @@
                 </div>
             </div>
 
-{{-- <script>
-    // let balanceData   = @json($balanceChart);
-    // let monthlyData   = @json($monthlyChart);
-    // let savingData    = @json($savingChart);
-    // let incomeData    = @json($incomeChart);
+ <script>
+     let balanceData   = @json($balanceChart);
+     let monthlyData   = @json($monthlyChart);
+     let savingData    = @json($savingChart);
+     let incomeData    = @json($incomeChart);
+     let spendData = @json($spendChart);
+     let breakupData = @json($breakupChart);
+     breakupData.series = breakupData.series.map(v => parseFloat(v));
+ </script>
 
-    // renderMiniBarChart("#bar_column", balanceData, "#49BEFF");
-    // renderMiniBarChart("#bar_column_1", monthlyData, "#FF6B6B");
-    // renderMiniBarChart("#bar_column_2", savingData, "#4CAF50");
-    // renderMiniBarChart("#bar_column_3", incomeData, "#FF9800");
-</script> --}}
-
+    
 @endsection

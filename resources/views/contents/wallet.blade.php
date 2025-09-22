@@ -26,6 +26,10 @@
                     data-bs-target="#addtransaction">
                     <i class="ti ti-circle-plus me-2"></i> Add Transaction
                 </button>
+                
+                <button type="button" class="btn rounded-pill btn-outline-primary fs-5" >
+                <a href="{{route('transactions.export')}}"><i class="ti ti-circle-plus me-2"></i> Export Transactions</a>
+            </button>
             </div>
         </div>
         <!--Add account Modal -->
@@ -151,7 +155,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="category_id" class="form-label">Category (optional)</label>
+                                <label for="category_id" class="form-label">Category</label>
                                 <select name="category_id" class="form-select">
                                     @foreach ($categories as $cat)
                                         @if ($cat->type != 0)

@@ -10,7 +10,7 @@
      <link rel="stylesheet" href="{{ asset('css/styles.min.css') }}" />
      <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.18/index.global.min.js'></script>
      <script>
-        var isAuthenticated = @json(auth()->check());
+        var isAuthenticated = @json(auth()->id());
       </script>
 
  </head>

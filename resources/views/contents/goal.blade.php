@@ -22,7 +22,7 @@
         <div class="nav d-block" role="tablist">
             <div class="row" style="max-height: 550px; width: 350px; overflow-y: auto;">
             @foreach ($goals as $index => $goal)
-            <div class="col-12 mb-2 mt-3">
+            <div class="col-12 mb-0 mt-3">
                 @php
                     $percent = $goal->target_amount > 0 
                         ? round(($goal->current_amount / $goal->target_amount) * 100, 2)
@@ -265,6 +265,11 @@
                                         <option value="cancelled">Cancelled</option>
                                     </select>
                                 </div>
+
+                                <div class="mb-3">
+                                    <label for="notes" class="form-label">Notes</label>
+                                    <textarea name="description" class="form-control" rows="2"></textarea>
+                                </div>   
 
                         </div>
                         <div class="modal-footer">

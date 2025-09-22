@@ -36,6 +36,7 @@ class GoalController extends Controller
                 $goal->current_amount = $validated['current'];
                 $goal->target_date = $validated['date'];
                 $goal->status = $validated['status'];
+                $goal->description = $request->description;
                 $goal->save();
             }
     
@@ -55,6 +56,7 @@ class GoalController extends Controller
             $goal->current_amount = $validated['current'];
             $goal->target_date = $validated['date'];
             $goal->status = $validated['status'];
+            $goal->description = $request->description;
             $goal->save();
         }
     
