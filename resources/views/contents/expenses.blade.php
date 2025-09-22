@@ -22,7 +22,7 @@
                     <div class="row" style="max-height: 550px; width: 350px; overflow-y: auto;">
                         {{-- @dd($budgets) --}}
                         @foreach ($budgets as $index => $budget)
-                            <div class="col-12 mb-2 mt-3">
+                            <div class="col-12 mb-1 mt-3">
                                 <div class="card shadow-sm w-100 {{ $index === 0 ? 'border-primary' : '' }}"
                                     data-bs-toggle="pill" data-bs-target="#budget-{{ $budget['id'] }}"
                                     aria-selected="{{ $index === 0 ? 'true' : 'false' }}" role="tab">
@@ -53,7 +53,7 @@
                                                     style="width: {{ $budget['utilization'] }}%;">
                                                 </div>
                                             </div>
-                                            <div class="d-flex justify-content-between mt-2 small">
+                                            <div class="d-flex justify-content-between mt-1 small">
                                                 <span class="fw-semibold">{{ $budget['utilization'] }}%</span>
                                                 <span class="text-success" data-bs-toggle="modal"
                                                     data-bs-target="#addexpense" data-id="{{ $budget['id'] }}"

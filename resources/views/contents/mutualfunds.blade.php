@@ -5,7 +5,21 @@
 @endsection
 
 @section('maincontents')
-<h1 class="font-weight">Stocks</h1>
+<div class="col d-flex align-items-center justify-content-between mb-3">
+    <!-- Left side: Heading -->
+    <h1 class="mb-0 fw-bold">Stocks</h1>
+
+    <!-- Center: Search box -->
+    <div class="mx-auto position-relative" style="width: 500px;">
+        <input type="text" class="form-control ps-5 py-2" id="text-srh" placeholder="Search Stock">
+        <i class="ti ti-search position-absolute top-50 start-0 translate-middle-y text-secondary ms-3 cls_search_stock"></i>
+
+        <!-- Dropdown results -->
+        <ul class="list-group position-absolute w-100 mt-1" id="stock-results" style="z-index: 1000; display: none;"></ul>
+    </div>
+</div>
+
+
 
 <div class="row">
 
@@ -198,7 +212,7 @@
             // Update chart
             chart.updateOptions({ xaxis: { categories: data.dates } });
             chart.updateSeries([{ name: "Price", data: data.prices }]);
-    
+    console.log( data)
             // Update stock info panel
             document.querySelector("#stock-title").innerText = data.stockname;
             document.querySelector("#detail-ticker").innerText = data.ticker;
@@ -221,6 +235,44 @@
                     .catch(err => console.error("Error fetching stock data:", err));
             });
         });
+
+        document.querySelector(".cls_search_stock").addEventListener("click", function () {
+    let query = document.getElementById("text-srh").value.trim();
+    let resultsEl = document.getElementById("stock-results");
+
+    if (query.length > 2) {
+        fetch(`https://finnhub.io/api/v1/search?q=${query}&token=d38fmjhr01qlbdj59iagd38fmjhr01qlbdj59ib0`)
+            .then(res => res.json())
+            .then(data => {
+                let results = data.result || [];
+                let output = "";
+
+                results.forEach(stock => {
+                    output += `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>${stock.description} (${stock.displaySymbol})</span>
+                            <small class="text-muted">${stock.type}</small>
+                        </li>
+                    `;
+                });
+
+                resultsEl.innerHTML = output;
+                resultsEl.style.display = results.length ? "block" : "none";
+            })
+            .catch(err => console.error("Error:", err));
+    } else {
+        resultsEl.style.display = "none"; // hide if query too short
+    }
+});
+
+// Optional: hide dropdown when clicking outside
+document.addEventListener("click", function(e){
+    if (!document.getElementById("text-srh").contains(e.target) &&
+        !document.querySelector(".cls_search_stock").contains(e.target)) {
+        document.getElementById("stock-results").style.display = "none";
+    }
+});
+
     });
     </script>
     

@@ -108,108 +108,77 @@ $(function () {
   // =====================================
   // Breakup
   // =====================================
-  var breakup = {
-    color: "#adb5bd",
-    series: [38, 40, 25],
-    labels: ["2022", "2021", "2020"],
-    chart: {
-      height: 300,
-      width:250,
-      type: "donut",
-      fontFamily: "Plus Jakarta Sans', sans-serif",
-      foreColor: "#adb0bb",
-    },
-    plotOptions: {
-      pie: {
-        startAngle: 0,
-        endAngle: 360,
-        donut: {
-          size: '75%',
+
+function renderDonutChart(selector, chartData) {
+    let options = {
+        series: chartData.series,
+        labels: chartData.labels,
+        chart: {
+            type: "donut",
+            height: 300,
+            width: 300,
+            fontFamily: "Plus Jakarta Sans', sans-serif",
+            foreColor: "#adb0bb",
         },
-      },
-    },
-    stroke: {
-      show: false,
-    },
-
-    dataLabels: {
-      enabled: false,
-    },
-
-    legend: {
-      show: false,
-    },
-    colors: ["#5D87FF", "#ecf2ff", "#F9F9FD"],
-
-    responsive: [
-      {
-        breakpoint: 991,
-        options: {
-          chart: {
-            width: 150,
-          },
+        plotOptions: {
+            pie: {
+                startAngle: 0,
+                endAngle: 360,
+                donut: { size: '75%' },
+            },
         },
-      },
-    ],
-    tooltip: {
-      theme: "dark",
-      fillSeriesColor: false,
-    },
-  };
+        stroke: { show: false },
+        dataLabels: { enabled: false },
+        legend: { show: false },
+        colors: chartData.colors,
+        tooltip: {
+            theme: "dark",
+            fillSeriesColor: false,
+        }
+    };
 
-  var chart = new ApexCharts(document.querySelector("#breakup"), breakup);
-  chart.render();
-
-
+    new ApexCharts(document.querySelector(selector), options).render();
+}
 
   // =====================================
   // Earning
   // =====================================
-  var earning = {
+  function renderSpendChart(selector, data, color="#49BEFF") {
+    let chartOptions = {
+        chart: {
+            id: "spendChart",
+            type: "area",
+            height: 0,
+            sparkline: { enabled: false },
+            fontFamily: "Plus Jakarta Sans', sans-serif",
+            foreColor: "#adb0bb",
+        },
+        series: [
+            {
+                name: "Expenses",
+                color: color,
+                data: data
+            },
+        ],
+        stroke: {
+            curve: "smooth",
+            width: 2,
+        },
+        fill: {
+            colors: ["#f3feff"],
+            type: "solid",
+            opacity: 0.2,
+        },
+        markers: { size: 4 },
+        tooltip: {
+            theme: "dark",
+            x: { show: true },
+        },
+    };
 
-    chart: {
-      id: "sparkline3",
-      type: "area",
-      height: 0,
-      sparkline: {
-        enabled: true,
-      },
-      group: "sparklines",
-      fontFamily: "Plus Jakarta Sans', sans-serif",
-      foreColor: "#adb0bb",
-    },
-    series: [
-      {
-        name: "Earnings",
-        color: "#49BEFF",
-        data: [25, 66, 20, 40, 12, 58, 20],
-      },
-    ],
-    stroke: {
-      curve: "smooth",
-      width: 2,
-    },
-    fill: {
-      colors: ["#f3feff"],
-      type: "solid",
-      opacity: 0.05,
-    },
+    new ApexCharts(document.querySelector(selector), chartOptions).render();
+}
 
-    markers: {
-      size: 0,
-    },
-    tooltip: {
-      theme: "dark",
-      fixed: {
-        enabled: true,
-        position: "right",
-      },
-      x: {
-        show: false,
-      },
-    },
-  };
-  new ApexCharts(document.querySelector("#earning"), earning).render();
   function renderMiniBarChart(selector, data, color = "#49BEFF") {
     let options = {
         chart: {
@@ -242,18 +211,18 @@ $(function () {
     let chart = new ApexCharts(document.querySelector(selector), options);
     chart.render();
 }
-let balanceData   = [25, 66, 20, 40, 12, 58, 20];
-let monthlyData   = [15, 45, 35, 50, 22, 38, 60];
-let savingData    = [10, 20, 30, 25, 35, 40, 45];
-let incomeData    = [40, 55, 65, 70, 50, 80, 90];
+// let balanceData   = [25, 66, 20, 40, 12, 58, 20];
+// let monthlyData   = [15, 45, 35, 50, 22, 38, 60];
+// let savingData    = [10, 20, 30, 25, 35, 40, 45];
+// let incomeData    = [40, 55, 65, 70, 50, 80, 90];
 
-// ✅ Render charts into widgets
+// // ✅ Render charts into widgets
+renderSpendChart("#earning", spendData);
 renderMiniBarChart("#bar_column", balanceData, "#49BEFF");
 renderMiniBarChart("#bar_column_1", monthlyData, "#FF6B6B");
 renderMiniBarChart("#bar_column_2", savingData, "#4CAF50");
 renderMiniBarChart("#bar_column_3", incomeData, "#FF9800");
-
-
+renderDonutChart("#breakup", breakupData);
 
 })
 document.addEventListener('DOMContentLoaded', function () {

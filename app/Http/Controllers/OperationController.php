@@ -16,212 +16,167 @@ use Illuminate\Foundation\Providers\FoundationServiceProvider;
 
 class OperationController extends Controller
 {
-    public function wallet(){
-        $categories = Category::whereNull('user_id')->orWhere('user_id', Auth::id())->get();
+    public function index()
+    {
+        $userId = Auth::id();
+    
+        // ==========================
+        // 1. BALANCE
+        // ==========================
+        $balance = wallet::where('user_id', $userId)->sum('balance');
+    
+        $lastMonthBalance = wallet::where('user_id', $userId)
+            ->whereMonth('created_at', now()->subMonth()->month)
+            ->sum('balance');
+        $balancePercent = $lastMonthBalance > 0 
+            ? round((($balance - $lastMonthBalance) / $lastMonthBalance) * 100, 2) 
+            : 0;
+    
+        // 📊 Balance Chart (last 6 months wallet sum)
+        $balanceChart = wallet::where('user_id', $userId)
+            ->selectRaw('MONTH(created_at) as month, SUM(balance) as total')
+            ->where('created_at', '>=', now()->subMonths(5))
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('total', 'month');
+    
+        // ==========================
+        // 2. MONTHLY EXPENSE
+        // ==========================
+        $monthlyExpense = transaction::where('user_id', $userId)
+            ->where('payment_type', '0') // expense
+            ->whereMonth('date', now()->month)
+            ->sum('amount');
+    
+        $lastMonthExpense = transaction::where('user_id', $userId)
+            ->where('payment_type', '0')
+            ->whereMonth('date', now()->subMonth()->month)
+            ->sum('amount');
+        $monthlyPercent = $lastMonthExpense > 0
+            ? round((($monthlyExpense - $lastMonthExpense) / $lastMonthExpense) * 100, 2)
+            : 0;
+    
+        // 📊 Monthly Expense Chart (last 6 months)
+        $monthlyChart = transaction::where('user_id', $userId)
+            ->where('payment_type', '0')
+            ->where('date', '>=', now()->subMonths(5))
+            ->selectRaw('MONTH(date) as month, SUM(amount) as total')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('total', 'month');
+    
+        // ==========================
+        // 3. SAVINGS
+        // ==========================
+        $saving = goal::where('user_id', $userId)->sum('current_amount');
+        $lastMonthSaving = goal::where('user_id', $userId)
+            ->whereMonth('created_at', now()->subMonth()->month)
+            ->sum('current_amount');
+        $savingPercent = $lastMonthSaving > 0
+            ? round((($saving - $lastMonthSaving) / $lastMonthSaving) * 100, 2)
+            : 0;
+    
+        // 📊 Saving Chart (last 6 months)
+        $savingChart = goal::where('user_id', $userId)
+            ->where('created_at', '>=', now()->subMonths(5))
+            ->selectRaw('MONTH(created_at) as month, SUM(current_amount) as total')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('total', 'month');
+    
+        // ==========================
+        // 4. INCOME
+        // ==========================
+        $periodIncome = transaction::where('user_id', $userId)
+            ->where('payment_type', '1') // income
+            ->sum('amount');
+    
+        $lastMonthIncome = transaction::where('user_id', $userId)
+            ->where('payment_type', '1')
+            ->whereMonth('date', now()->subMonth()->month)
+            ->sum('amount');
+        $periodIncomePercent = $lastMonthIncome > 0
+            ? round((($periodIncome - $lastMonthIncome) / $lastMonthIncome) * 100, 2)
+            : 0;
+    
+        // 📊 Income Chart (last 6 months)
+        $incomeChart = transaction::where('user_id', $userId)
+            ->where('payment_type', '1')
+            ->where('date', '>=', now()->subMonths(5))
+            ->selectRaw('MONTH(date) as month, SUM(amount) as total')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('total', 'month');
+    
+        // ==========================
+        // 5. RECENT TRANSACTIONS
+        // ==========================
+        $recenttransactions = transaction::with('category')
+            ->where('user_id', $userId)
+            ->orderBy('date', 'desc')
+            ->take(5)
+            ->get();
+    
+        // ==========================
+        // 6. SPEND CHART GROWTH
+        // ==========================
+        $thisMonthSpend = transaction::where('user_id', $userId)
+            ->where('payment_type', '0')
+            ->whereMonth('date', now()->month)
+            ->sum('amount');
+        $chartGrowth = $lastMonthExpense > 0
+            ? round((($thisMonthSpend - $lastMonthExpense) / $lastMonthExpense) * 100, 2)
+            : 0;
 
-        // $Trans_categories =  category::where('type',2)->get();
-       $wallets = Wallet::with('category')->where('user_id', Auth::id())->get();
+        // 📊 Spend Chart Data (last 6 months expenses)
+        $spendChart = transaction::where('user_id', $userId)
+        ->where('payment_type', '0')
+        ->where('date', '>=', now()->subMonths(5))
+        ->selectRaw('MONTH(date) as month, SUM(amount) as total')
+        ->groupBy('month')
+        ->orderBy('month')
+        ->pluck('total', 'month');
 
-        $transactions =transaction::with('category','wallet')->whereHas('wallet', function($query) {
-        $query->where('user_id', Auth::id());
-        })->orderBy('date', 'desc')->paginate(5);
-
-       $total_balance = $wallets->sum('balance');
-       $personal_funds = $wallets->where('type',1)->sum('balance');
-       $credit_cards = $wallets->where('type',2)->sum('balance');
-       $investments = $wallets->where('type',11)->sum('balance');
-        return view('contents.wallet',compact('categories','wallets','total_balance','personal_funds','credit_cards','investments','transactions'));
-    }
-    public function expenses()
-{
-    $userId = Auth::id();
-
-    // Fetch all transactions of the user
-    $transactions = Transaction::where('user_id', $userId)->get();
-
-    // Group transactions by category
-    $grouped = $transactions->groupBy('category_id');
-
-    // Only categories where user has transactions
-    $budgets = $grouped->map(function ($items, $categoryId) use ($userId) {
-        $category = $items->first()->category; // get the category model
-
-        // Current month date range
-        $startOfMonth = now()->startOfMonth();
-        $endOfMonth = now()->endOfMonth();
-
-        // Current month expenses & income
-        $spent = $items->where('payment_type', 0)
-            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+        $profit  = transaction::where('user_id', $userId)
+            ->where('payment_type', '1')
+            ->whereMonth('date', now()->month)
             ->sum('amount');
 
-        $income = $items->where('payment_type', 1)
-            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+        $expense = transaction::where('user_id', $userId)
+            ->where('payment_type', '0')
+            ->whereMonth('date', now()->month)
             ->sum('amount');
 
-        // Last month expenses & income
-        $lastMonthStart = now()->subMonth()->startOfMonth();
-        $lastMonthEnd   = now()->subMonth()->endOfMonth();
-
-        $lastMonthSpent = $items->where('payment_type', 0)
-            ->whereBetween('date', [$lastMonthStart, $lastMonthEnd])
-            ->sum('amount');
-
-        $lastMonthIncome = $items->where('payment_type', 1)
-            ->whereBetween('date', [$lastMonthStart, $lastMonthEnd])
-            ->sum('amount');
-
-        // Get monthly target from Expense table (linked to category)
-        $expenseTarget = Expense::where('category_id', $categoryId)
-            ->first();
-
-        $targetAmount = $expenseTarget->target ?? 0;
-
-        // Taxes example
-        $taxes = $spent * 0.02;
-
-        // Debt example (type=3)
-        $debt = $items->where('type', 3)->sum('amount');
-
-        // Utilization percentage
-        $utilization = $targetAmount > 0 ? round(($spent / $targetAmount) * 100, 2) : 0;
-
-        return [
-            'id'          => $categoryId,
-            'name'        => $category->name ?? 'Unknown',
-            'icon'        => $category->icon ?? 'fi fi-rr-folder',
-            'budget'      => $targetAmount,
-            'spent'       => $spent,
-            'income'      => $income,
-            'amount'      => $spent, // spent amount for frontend
-            'last_month'  => [
-                'expense' => $lastMonthSpent,
-                'income'  => $lastMonthIncome
-            ],
-            'taxes'       => $taxes,
-            'debt'        => $debt,
-            'utilization' => $utilization
+        // Chart data
+        $breakupChart = [
+            'series' => [$profit, $expense], 
+            'labels' => ['Profit', 'Expense'],
+            'colors' => ["#5D87FF", "#ecf2ff", "#F9F9FD"]
         ];
-    })->values();
-    $summaryCards = [
-        [
-            'title' => 'Total Budget',
-            'value' => '₹' . ($budget['budget'] ?? 0),
-            'icon'  => 'fi fi-rr-dollar',
-            'color' => 'primary'
-        ],
-        [
-            'title' => 'Spent',
-            'value' => '₹' . ($budget['spent'] ?? 0),
-            'icon'  => 'fi fi-rr-dollar',
-            'color' => 'secondary'
-        ],
-        [
-            'title' => 'Remaining',
-            'value' => '₹' . (($budget['budget'] ?? 0) - ($budget['spent'] ?? 0)),
-            'icon'  => 'fi fi-rr-dollar',
-            'color' => 'info'
-        ]
-    ];
+
+        return view('contents.index', [
+            'balanace'          => $balance,
+            'balanace_perecent' => $balancePercent,
+            'Monthly'           => $monthlyExpense,
+            'Monthly_percent'   => $monthlyPercent,
+            'Saving'            => $saving,
+            'Saving_perecent'   => $savingPercent,
+            'Period_Income'     => $periodIncome,
+            'Period_Income_percent' => $periodIncomePercent,
+            'Chart_growth'      => $chartGrowth,
+            'recenttransactions'=> $recenttransactions,
     
-
-    return view('contents.expenses', compact('budgets','summaryCards'));
-}
-
-    
-    // public function mutualfunds(){
-
-    //     $stocks = Stock::where('user_id', Auth::id())->get();
-
-    
-
-    //     $investments = collect([
-    //         (object)[
-    //             'name' => 'Tesla Inc',
-    //             'ticker' => 'TSLA',
-    //             'value' => 10225.40,
-    //             'change' => 1.66,
-    //             'icon' => 'angellist',
-    //             'color' => 'info'
-    //         ],
-    //         (object)[
-    //             'name' => 'Apple Inc',
-    //             'ticker' => 'AAPL',
-    //             'value' => 15215.70,
-    //             'change' => 0.66,
-    //             'icon' => 'apple',
-    //             'color' => 'dark'
-    //         ],
-    //         (object)[
-    //             'name' => 'Tesla Inc',
-    //             'ticker' => 'TSLA',
-    //             'value' => 10225.40,
-    //             'change' => 1.66,
-    //             'icon' => 'angellist',
-    //             'color' => 'info'
-    //         ],
-    //         (object)[
-    //             'name' => 'Amazon Inc',
-    //             'ticker' => 'AMZN',
-    //             'value' => 40500.20,
-    //             'change' => 2.56,
-    //             'icon' => 'amazon',
-    //             'color' => 'warning'
-    //         ]
-    //     ]);
-    //     // $investments=collect([]);
-
-    //     return view('contents.mutualfunds', compact('investments', 'dates', 'navs', 'symbol','stockname'));
-
-    // }
-
-    public function mutualfunds()
-{
-    $stocks = Stock::where('user_id', Auth::id())->get();
-
-    // If user has at least one stock, show its chart initially
-    $firstStock = $stocks->first();
-
-    $chartData = $firstStock 
-        ? $this->api_stock($firstStock->ticker)
-        : ['dates' => [], 'prices' => [], 'symbol' => null, 'stockname' => null];
-
-    return view('contents.mutualfunds', [
-        'stocks' => $stocks,
-        'dates' => $chartData['dates'],
-        'navs' => $chartData['prices'],
-        'symbol' => $chartData['symbol'],
-        'stockname' => $chartData['stockname']
-    ]);
-}
-public function stockData($id)
-{
-    $stock = Stock::where('user_id', Auth::id())->findOrFail($id);
-    $chartData = $this->api_stock($stock->ticker);
-
-    return response()->json($chartData);
-}
-
-public function create_stock(Request $request){
-    
-        $validated = $request->validate([
-            'name'          => 'required|string|max:255',
-            'ticker'        => 'required|string|max:20',
-            'quantity'      => 'required|integer|min:0',
-            'avg_price'     => 'required|numeric|min:0',
-            'exchange'      => 'nullable|string|max:50',
-            'sector'        => 'nullable|string|max:100',
-            'icon'          => 'nullable|string|max:50',
-            'color'         => 'nullable|string|max:20',
+            // charts
+            'balanceChart'      => array_values($balanceChart->toArray()),
+            'monthlyChart'      => array_values($monthlyChart->toArray()),
+            'savingChart'       => array_values($savingChart->toArray()),
+            'incomeChart'       => array_values($incomeChart->toArray()),
+            'spendChart'       => array_values($spendChart->toArray()),
+            'breakupChart' => $breakupChart,
         ]);
+    }
+    
 
-        $validated['user_id'] = Auth::id();
-        $validated['invested_amount'] = $validated['quantity'] * $validated['avg_price'];
-
-        Stock::create($validated);
-
-        return redirect()->route('stocks.index')->with('success', 'Stock added successfully!');
-}
 
     public function goal(){
         $goals= goal::with('goal_category')->where('user_id',Auth::id())->get();
@@ -234,27 +189,6 @@ public function create_stock(Request $request){
     public function calender(){
         return view('contents.calender');
     }
-    protected function api_stock($ticker)
-    {
-        $apiKey = env('ALPHA_VANTAGE_KEY');
-        // $apiKey='demo';
-        $url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={$ticker}&apikey={$apiKey}";
-        $data = json_decode(file_get_contents($url), true);
-    
-        $timeSeries = $data['Time Series (Daily)'] ?? [];
-        $dates = [];
-        $prices = [];
-        foreach (array_slice($timeSeries, 0, 20) as $date => $info) {
-            $dates[] = date('M d', strtotime($date));
-            $prices[] = (float) $info['4. close'];
-        }
-        return [
-            'dates' => array_reverse($dates),
-            'prices' => array_reverse($prices),
-            'symbol' => $ticker,
-            'stockname' => $data['Meta Data']['2. Symbol'] ?? $ticker
-        ];
-    }
-    
+   
 
 }
