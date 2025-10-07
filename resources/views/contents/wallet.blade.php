@@ -27,8 +27,8 @@
                     <i class="ti ti-circle-plus me-2"></i> Add Transaction
                 </button>
                 
-                <button type="button" class="btn rounded-pill btn-outline-primary fs-5" >
-                <a href="{{route('transactions.export')}}"><i class="ti ti-circle-plus me-2"></i> Export Transactions</a>
+                <button type="button" class="btn rounded-pill btn-outline-primary fs-5" onclick="location.href='{{ route('transactions.export') }}'" >
+                <i class="ti ti-circle-plus me-2"></i> Export Transactions
             </button>
             </div>
         </div>

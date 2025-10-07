@@ -49,7 +49,7 @@ class AuthController extends Controller
 
          event(new Registered($user));
 
-        return redirect()->route('login')->with('success', 'Account created! Please verify your email.');
+        return redirect()->route('index')->with('success', 'Account created! Please verify your email.');
     }
 
     public function logout(Request $request) {

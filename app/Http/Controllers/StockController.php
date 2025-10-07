@@ -58,9 +58,9 @@ class StockController extends Controller
     }
     protected function api_stock($ticker)
     {
-        // $apiKey = env('ALPHA_VANTAGE_KEY');
+        $apiKey = env('ALPHA_VANTAGE_KEY');
         // $ticker='IBM';
-        $apiKey='demo';
+        // $apiKey='demo';
         $url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={$ticker}&apikey={$apiKey}";
         $data = json_decode(file_get_contents($url), true);
     
