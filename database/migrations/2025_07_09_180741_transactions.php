@@ -16,8 +16,10 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete(); // Optional
             $table->string('name');
-            $table->decimal('balance', 10, 2);
+            $table->decimal('amount', 10, 2);
+            $table->integer('payment_type');
             $table->string('notes');
+            $table->date('date');
             $table->date('expiry_date')->nullable();
             $table->date('acc_created_at');
             $table->timestamps();

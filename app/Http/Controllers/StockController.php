@@ -6,6 +6,10 @@ use App\Models\Stock;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class StockController extends Controller
 {
@@ -47,6 +51,10 @@ class StockController extends Controller
                 'sector'        => 'nullable|string|max:100',
                 'icon'          => 'nullable|string|max:50',
                 'color'         => 'nullable|string|max:20',
+                'goal_id'       => [
+                    'nullable',
+                    Rule::exists('goals', 'id')->where('user_id', Auth::id()),
+                ],
             ]);
     
             $validated['user_id'] = Auth::id();
@@ -59,11 +67,40 @@ class StockController extends Controller
     protected function api_stock($ticker)
     {
         $apiKey = env('ALPHA_VANTAGE_KEY');
-        // $ticker='IBM';
-        // $apiKey='demo';
-        $url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={$ticker}&apikey={$apiKey}";
-        $data = json_decode(file_get_contents($url), true);
-    
+        if (!$apiKey) {
+            return $this->emptyStockData($ticker);
+        }
+
+        $data = Cache::remember("stock_daily_{$ticker}", now()->addMinutes(30), function () use ($ticker, $apiKey) {
+            try {
+                $response = Http::timeout(8)
+                    ->retry(2, 250)
+                    ->get('https://www.alphavantage.co/query', [
+                        'function' => 'TIME_SERIES_DAILY',
+                        'symbol' => $ticker,
+                        'apikey' => $apiKey,
+                    ]);
+
+                if (!$response->successful()) {
+                    Log::warning('Stock API request failed', [
+                        'ticker' => $ticker,
+                        'status' => $response->status(),
+                    ]);
+
+                    return [];
+                }
+
+                return $response->json() ?? [];
+            } catch (\Throwable $exception) {
+                Log::warning('Stock API request exception', [
+                    'ticker' => $ticker,
+                    'message' => $exception->getMessage(),
+                ]);
+
+                return [];
+            }
+        });
+
         $timeSeries = $data['Time Series (Daily)'] ?? [];
         $dates = [];
         $prices = [];
@@ -76,7 +113,19 @@ class StockController extends Controller
             'dates' => array_reverse($dates),
             'prices' => array_reverse($prices),
             'symbol' => $ticker,
+            'ticker' => $ticker,
             'stockname' => $data['Meta Data']['2. Symbol'] ?? $ticker
+        ];
+    }
+
+    protected function emptyStockData($ticker)
+    {
+        return [
+            'dates' => [],
+            'prices' => [],
+            'symbol' => $ticker,
+            'ticker' => $ticker,
+            'stockname' => $ticker,
         ];
     }
 }

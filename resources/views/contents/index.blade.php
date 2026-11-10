@@ -4,6 +4,23 @@
             <div class="dashbord-front-view">
                 <h1 class="font-weight">Dashboard</h1>
 
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Quick Actions</h5>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a href="/wallet" class="btn btn-primary">Add Transaction</a>
+                                    <a href="/expenses" class="btn btn-secondary">Add Expense</a>
+                                    <a href="/mutualfunds" class="btn btn-success">Add Investment</a>
+                                    <a href="/goals" class="btn btn-info">Set Goal</a>
+                                    <a href="/report" class="btn btn-warning">View Reports</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="custom-grid">
                     <!-- W1 -->
                     <div class="widget card" style="min-height: 150px;">

@@ -77,13 +77,14 @@
                                 <span class="hide-menu">Calender</span>
                             </a>
                         </li>
+                        @if(Auth::check())
                         <li class="sidebar-item">
-                            <a class="sidebar-link" href="/report" aria-expanded="false">
-                                <i class="ti ti-report-analytics"></i>
-                                <span class="hide-menu">Reports & Analytics</span>
+                            <a class="sidebar-link" href="/profile" aria-expanded="false">
+                                <i class="ti ti-user"></i>
+                                <span class="hide-menu">My Profile</span>
                             </a>
                         </li>
-
+                        @endif
                         <!-- ---------------------------------- -->
                         <!-- Dashboard -->
                         <!-- ---------------------------------- -->
@@ -111,6 +112,7 @@
                         @endif
                     </ul>
                 </nav>
+                
                 <!-- End Sidebar navigation -->
             </div>
             <!-- End Sidebar scroll-->
@@ -144,6 +146,13 @@
                                 </div>
                             </div>
                         </li>
+                        @auth
+                        <li class="nav-item">
+                            <button class="nav-link btn btn-link" id="theme-toggle" title="Toggle Theme">
+                                <i class="ti {{ auth()->user()->preference->theme ?? 'light' === 'dark' ? 'ti-sun' : 'ti-moon' }}"></i>
+                            </button>
+                        </li>
+                        @endauth
                     </ul>
                 
                     <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
@@ -158,7 +167,7 @@
                                 <div class="dropdown dropdown-menu dropdown-menu-end dropdown-menu-animate-up"
                                     aria-labelledby="drop2">
                                     <div class="message-body">
-                                        <a href="javascript:void(0)"
+                                        <a href="/profile"
                                             class="d-flex align-items-center gap-2 dropdown-item">
                                             <i class="ti ti-user fs-6"></i>
                                             <p class="mb-0 fs-3">My Profile</p>
@@ -168,12 +177,14 @@
                                             <i class="ti ti-mail fs-6"></i>
                                             <p class="mb-0 fs-3">My Account</p>
                                         </a>
-                                        <a href="javascript:void(0)"
+                                        <!-- <a href="javascript:void(0)"
                                             class="d-flex align-items-center gap-2 dropdown-item">
                                             <i class="ti ti-list-check fs-6"></i>
                                             <p class="mb-0 fs-3">My Task</p>
-                                        </a>
+                                        </a> -->
+                                        @if(@Auth::check())
                                         <a href="/logout" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
+                                        @endif
                                     </div>
                                 </div>
                             </li>

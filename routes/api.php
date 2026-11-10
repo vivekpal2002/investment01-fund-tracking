@@ -4,4 +4,4 @@ use App\Http\Controllers\ExpenseController;
 // routes/api.php
 // Route::middleware('api')->get('/expenses/by-date', [ExpenseController::class, 'byDate']);
 
-Route::get('/expenses/by-date', [ExpenseController::class, 'byDate']);
+Route::middleware(['web', 'auth'])->get('/expenses/by-date', [ExpenseController::class, 'byDate']);
