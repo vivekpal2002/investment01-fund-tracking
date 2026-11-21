@@ -79,6 +79,13 @@
                                 @endif
                             </span>
                         </div>
+                        <span class="text-success" data-bs-toggle="modal"
+                        data-bs-target="#addgoal" data-id="{{ $goal['id'] }}"
+                        data-name="{{ $goal['name'] }}"
+                        data-target="{{ $goal['goal'] }}"
+                        data-type="{{ $goal['type'] ?? 1 }}">
+                        Update Goal
+                    </span>
                     </div>
                 </div>
             </div>

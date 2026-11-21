@@ -32,6 +32,7 @@ class GoalController extends Controller
             // Update associated goal
             $goal = goal::where('goal_category_id', $categoryId)->first();
             if ($goal) {
+                $goal->title = $validated['gname'];
                 $goal->target_amount = $validated['target'];
                 $goal->current_amount = $validated['current'];
                 $goal->target_date = $validated['date'];
@@ -52,6 +53,7 @@ class GoalController extends Controller
             $goal = new goal();
             $goal->goal_category_id = $category->id;
             $goal->user_id = Auth::id();
+            $goal->title = $validated['gname'];
             $goal->target_amount = $validated['target'];
             $goal->current_amount = $validated['current'];
             $goal->target_date = $validated['date'];
@@ -63,4 +65,3 @@ class GoalController extends Controller
         return redirect()->back()->with('message', 'Goal Category & Goal saved successfully');
     }
         }
-

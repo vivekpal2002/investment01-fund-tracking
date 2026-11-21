@@ -184,7 +184,152 @@ class OperationController extends Controller
         return view('contents.goal', compact('goals'));
     }
     public function report(){
-        return view('contents.reports');
+        $userId = Auth::id();
+        $startOfMonth = now()->startOfMonth();
+        $endOfMonth = now()->endOfMonth();
+        $lastMonthStart = now()->subMonth()->startOfMonth();
+        $lastMonthEnd = now()->subMonth()->endOfMonth();
+        $stocks = Stock::with('goal.goal_category')->where('user_id', $userId)->get();
+
+        $monthlyIncome = transaction::where('user_id', $userId)
+            ->where('payment_type', 1)
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->sum('amount');
+
+        $monthlyExpenses = transaction::where('user_id', $userId)
+            ->where('payment_type', 0)
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->sum('amount');
+
+        $lastMonthIncome = transaction::where('user_id', $userId)
+            ->where('payment_type', 1)
+            ->whereBetween('date', [$lastMonthStart, $lastMonthEnd])
+            ->sum('amount');
+
+        $lastMonthExpenses = transaction::where('user_id', $userId)
+            ->where('payment_type', 0)
+            ->whereBetween('date', [$lastMonthStart, $lastMonthEnd])
+            ->sum('amount');
+
+        $totalSavings = goal::where('user_id', $userId)->sum('current_amount');
+        $transactionCount = transaction::where('user_id', $userId)->count();
+        $activeCategories = transaction::where('user_id', $userId)
+            ->whereNotNull('category_id')
+            ->distinct('category_id')
+            ->count('category_id');
+
+        $dailyAverage = now()->day > 0 ? round($monthlyExpenses / now()->day, 2) : 0;
+        $expenseChange = $lastMonthExpenses > 0
+            ? round((($monthlyExpenses - $lastMonthExpenses) / $lastMonthExpenses) * 100, 2)
+            : 0;
+        $incomeChange = $lastMonthIncome > 0
+            ? round((($monthlyIncome - $lastMonthIncome) / $lastMonthIncome) * 100, 2)
+            : 0;
+
+        $weeklyLabels = [];
+        $weeklyExpenses = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $weeklyLabels[] = $date->format('D');
+            $weeklyExpenses[] = (float) transaction::where('user_id', $userId)
+                ->where('payment_type', 0)
+                ->whereDate('date', $date)
+                ->sum('amount');
+        }
+
+        $monthLabels = [];
+        $monthlyIncomeSeries = [];
+        $monthlyExpenseSeries = [];
+        $netWorthSeries = [];
+        $walletBalanceSeries = [];
+        $investmentValueSeries = [];
+        $goalValueSeries = [];
+
+        for ($i = 5; $i >= 0; $i--) {
+            $month = now()->subMonths($i);
+            $monthStart = $month->copy()->startOfMonth();
+            $monthEnd = $month->copy()->endOfMonth();
+
+            $monthLabels[] = $month->format('M Y');
+            $monthlyIncomeSeries[] = (float) transaction::where('user_id', $userId)
+                ->where('payment_type', 1)
+                ->whereBetween('date', [$monthStart, $monthEnd])
+                ->sum('amount');
+            $monthlyExpenseSeries[] = (float) transaction::where('user_id', $userId)
+                ->where('payment_type', 0)
+                ->whereBetween('date', [$monthStart, $monthEnd])
+                ->sum('amount');
+
+            $walletComponent = (float) wallet::where('user_id', $userId)
+                ->where('created_at', '<=', $monthEnd)
+                ->sum('balance');
+            $investmentComponent = (float) Stock::where('user_id', $userId)
+                ->where('created_at', '<=', $monthEnd)
+                ->get()
+                ->sum(fn ($stock) => $stock->quantity * ($stock->current_price ?? $stock->avg_price ?? 0));
+            $goalComponent = (float) goal::where('user_id', $userId)
+                ->where('created_at', '<=', $monthEnd)
+                ->sum('current_amount');
+
+            $walletBalanceSeries[] = $walletComponent;
+            $investmentValueSeries[] = $investmentComponent;
+            $goalValueSeries[] = $goalComponent;
+            $netWorthSeries[] = $walletComponent + $investmentComponent + $goalComponent;
+        }
+
+        $topCategories = transaction::with('category')
+            ->where('user_id', $userId)
+            ->where('payment_type', 0)
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->get()
+            ->groupBy(fn ($txn) => $txn->category->name ?? 'Uncategorized')
+            ->map(fn ($items) => (float) $items->sum('amount'))
+            ->sortDesc()
+            ->take(5);
+
+        $stockValue = fn ($stock) => (float) ($stock->quantity * ($stock->current_price ?? $stock->avg_price ?? 0));
+        $sectorAllocation = $stocks
+            ->groupBy(fn ($stock) => $stock->sector ?: 'Uncategorized')
+            ->map(fn ($items) => $items->sum($stockValue))
+            ->sortDesc();
+        $exchangeAllocation = $stocks
+            ->groupBy(fn ($stock) => $stock->exchange ?: 'Unknown')
+            ->map(fn ($items) => $items->sum($stockValue))
+            ->sortDesc();
+        $goalAllocation = $stocks
+            ->groupBy(fn ($stock) => $stock->goal->goal_category->name ?? $stock->goal->title ?? 'Unlinked')
+            ->map(fn ($items) => $items->sum($stockValue))
+            ->sortDesc();
+        $assetTypeAllocation = collect([
+            'Stocks' => $stocks->sum($stockValue),
+            'Goals' => (float) $totalSavings,
+            'Wallets' => (float) wallet::where('user_id', $userId)->sum('balance'),
+        ])->filter(fn ($value) => $value > 0);
+
+        return view('contents.reports', compact(
+            'monthlyIncome',
+            'monthlyExpenses',
+            'totalSavings',
+            'transactionCount',
+            'activeCategories',
+            'dailyAverage',
+            'expenseChange',
+            'incomeChange',
+            'weeklyLabels',
+            'weeklyExpenses',
+            'monthLabels',
+            'monthlyIncomeSeries',
+            'monthlyExpenseSeries',
+            'netWorthSeries',
+            'walletBalanceSeries',
+            'investmentValueSeries',
+            'goalValueSeries',
+            'topCategories',
+            'sectorAllocation',
+            'exchangeAllocation',
+            'goalAllocation',
+            'assetTypeAllocation'
+        ));
     }
     public function calender(){
         return view('contents.calender');

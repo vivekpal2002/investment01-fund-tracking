@@ -9,6 +9,11 @@ class Stock extends Model
     protected $table='stocks';
     protected $fillable = [
         'user_id', 'name', 'ticker', 'quantity', 'avg_price', 'invested_amount',
-        'current_price', 'change_percent', 'exchange', 'sector', 'icon', 'color'
+        'current_price', 'change_percent', 'exchange', 'sector', 'icon', 'color', 'goal_id'
     ];
+
+    public function goal()
+    {
+        return $this->belongsTo(Goal::class);
+    }
 }

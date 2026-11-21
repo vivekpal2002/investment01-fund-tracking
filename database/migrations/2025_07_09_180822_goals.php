@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('target_amount', 12, 2);
             $table->decimal('current_amount', 12, 2)->default(0);
             $table->date('target_date')->nullable();
-            $table->enum('status', ['in_progress', 'achieved', 'cancelled'])->default('in_progress');
+            $table->enum('status', ['in_progress', 'achieved', 'hold', 'cancelled'])->default('in_progress');
             $table->timestamps();
         });
 

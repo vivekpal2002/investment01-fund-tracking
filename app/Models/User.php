@@ -23,6 +23,14 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'phone',
+        'dob',
+        'gender',
+        'address',
+        'income',
+        'goal',
+        'strategy',
+        'risk',
     ];
 
     /**
@@ -45,6 +53,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'dob' => 'date',
+            'income' => 'decimal:2',
+            'goal' => 'decimal:2',
         ];
     }
     public function sendEmailVerificationNotification()
@@ -74,6 +85,11 @@ public function investments()
 public function goals()
 {
     return $this->hasMany(Goal::class);
+}
+
+public function preference()
+{
+    return $this->hasOne(UserPreference::class);
 }
 
 }

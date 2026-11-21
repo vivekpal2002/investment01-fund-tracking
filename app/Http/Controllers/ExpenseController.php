@@ -119,20 +119,28 @@ public function expenses()
 
         if($categoryId){
             // Update existing category / expense
-            $category = category::find($categoryId);
+            $category = category::where('id', $categoryId)
+                ->where(function ($query) {
+                    $query->whereNull('user_id')->orWhere('user_id', Auth::id());
+                })
+                ->firstOrFail();
             $category->name = $request->ename;
             $category->type = $request->type_of_fund;
             $category->update();
 
-            $expense = expense::where('category_id', $categoryId)->first();
+            $expense = expense::where('category_id', $categoryId)
+                ->where('user_id', Auth::id())
+                ->first();
 
             if($expense){
                 $expense->target = $request->target;
                 $expense->save();
             }else{
                 $expense = new Expense();
+                $expense->user_id = Auth::id();
                 $expense->category_id = $category->id;
                 $expense->target = $request->target;
+                $expense->date = now()->toDateString();
                 $expense->save();
             }
         } else {
@@ -144,8 +152,10 @@ public function expenses()
             $category->save();
 
             $expense = new Expense();
+            $expense->user_id = Auth::id();
             $expense->category_id = $category->id;
             $expense->target = $request->target;
+            $expense->date = now()->toDateString();
             $expense->save();
         }
 
@@ -169,7 +179,7 @@ public function expenses()
         $transactions = transaction::where('user_id', $userId)
             ->whereBetween('date', [$start, $end])
             ->get();
-    
+
         // Map to FullCalendar format
         $events = $transactions->map(function ($txn) {
             return [
@@ -184,5 +194,3 @@ public function expenses()
     
   
 }
-
-

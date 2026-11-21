@@ -9,6 +9,7 @@ use App\Models\transaction;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 
 class WalletController extends Controller
@@ -70,30 +71,34 @@ class WalletController extends Controller
 
     ]);
 
-    // Save transaction
-    $transaction = new transaction();
-    $transaction->title = $validatedData['title'];
-    $transaction->trxn_type = $validatedData['type'];
-    $transaction->amount = $validatedData['amount'];
-    $transaction->payment_type = array_search($validatedData['payment_type'], config('app.payment_type'));
-    $transaction->wallet_id = $validatedData['wallet_id'];
-    $transaction->category_id = $validatedData['category_id'] ?? null;
-    $transaction->date = $validatedData['date'];
-    $transaction->user_id = Auth::id();
-    $transaction->status =array_search($validatedData['payment_type'], config('app.transaction_statuses'));
-    $transaction->notes = $validatedData['notes'] ?? null;
-    $transaction->save();
+    DB::transaction(function () use ($validatedData) {
+        $wallet = wallet::where('user_id', Auth::id())
+            ->lockForUpdate()
+            ->findOrFail($validatedData['wallet_id']);
 
-    // Update wallet balance
-    $wallet = wallet::where('user_id',Auth::id())->find($validatedData['wallet_id']);
-    if ($wallet) {
-        if ($validatedData['payment_type'] == 'Money received') { // Income
+        $transaction = new transaction();
+        $transaction->name = $validatedData['title'];
+        $transaction->title = $validatedData['title'];
+        $transaction->trxn_type = $validatedData['type'];
+        $transaction->amount = $validatedData['amount'];
+        $transaction->payment_type = array_search($validatedData['payment_type'], config('app.payment_type'));
+        $transaction->wallet_id = $wallet->id;
+        $transaction->category_id = $validatedData['category_id'] ?? null;
+        $transaction->date = $validatedData['date'];
+        $transaction->user_id = Auth::id();
+        $transaction->status = array_search($validatedData['status'], config('app.transaction_statuses'));
+        $transaction->notes = $validatedData['notes'] ?? '';
+        $transaction->acc_created_at = now()->toDateString();
+        $transaction->save();
+
+        if ($validatedData['payment_type'] == 'Money received') {
             $wallet->balance += $validatedData['amount'];
-        } elseif ($validatedData['payment_type'] == 'Money sent') { // Expense
+        } elseif ($validatedData['payment_type'] == 'Money sent') {
             $wallet->balance -= $validatedData['amount'];
         }
-    }
+
         $wallet->save();
+    });
 
     return redirect()->back()->with('success', 'Transaction added successfully!');
 
